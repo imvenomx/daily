@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#0E1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Daily · Season Tracker</title>
+<style>
+  :root{
+    --bg:#0E1117; --surface:#161B22; --raised:#1C232E; --raised2:#222A36;
+    --border:#293240; --line:#20262F; --text:#E7EBF2; --muted:#8B93A3; --faint:#5A6474;
+    --alert:#E5A93C; --alert-bg:#2A2415;
+    --cjca:#1F9D6E; --cjca-l:#5FD3A5;
+    --gym:#D65F2E; --gym-l:#F0946B;
+    --italian:#8C7A2E; --italian-l:#D8C36A;
+    --chinese:#A63D5C; --chinese-l:#E07E9A;
+    --cardio:#2E6FB0; --cardio-l:#6FA8E0;
+    --running:#2E6FB0; --running-l:#6FA8E0;
+    --cycling:#149A9A; --cycling-l:#57C9C9;
+    --swimming:#3AA5C4; --swimming-l:#78CBE6;
+    --prayer:#4B5AA6; --prayer-l:#8C98D8;
+    --serif:ui-serif,"New York",Georgia,"Times New Roman",serif;
+    --sans:-apple-system,BlinkMacSystemFont,ui-sans-serif,"SF Pro Text",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono","SFMono-Regular",Menlo,monospace;
+    --r:14px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    padding:env(safe-area-inset-top) 0 0}
+  #app{max-width:480px;margin:0 auto;padding:22px 16px 116px;min-height:100vh}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  button{font-family:inherit;color:inherit;cursor:pointer;border:none;background:none}
+  input{font-family:inherit}
+  :focus-visible{outline:2px solid var(--cardio-l);outline-offset:2px;border-radius:6px}
+
+  .boot{display:flex;align-items:center;justify-content:center;height:60vh;color:var(--faint);
+    font-family:var(--mono);font-size:13px}
+
+  /* Greeting */
+  .greet{margin:2px 2px 18px}
+  .greet h1{font-family:var(--serif);font-weight:500;font-size:30px;line-height:1.15;
+    margin:0;letter-spacing:-.01em;text-wrap:balance}
+  .greet h1 .name{font-style:italic}
+  .greet .edit{font-size:12px;color:var(--faint);vertical-align:middle;margin-left:6px;
+    border:1px solid var(--border);border-radius:20px;padding:2px 8px}
+  .greet .date{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:7px;
+    letter-spacing:.02em;text-transform:uppercase}
+
+  /* Pills */
+  .pills{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;margin:0 -2px;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch}
+  .pills::-webkit-scrollbar{display:none}
+  .pill{flex:0 0 auto;min-width:86px;background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;padding:9px 10px 8px;display:flex;flex-direction:column;gap:5px;
+    border-top:2px solid var(--pc)}
+  .pill .ptop{display:flex;align-items:center;gap:6px;justify-content:space-between}
+  .pill .plabel{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--pcl)}
+  .pill .dot{width:12px;height:12px;border-radius:50%;flex:0 0 auto}
+  .dot.empty{border:2px solid var(--pc);background:transparent}
+  .dot.rest{border:2px dashed var(--faint);background:transparent}
+  .dot.partial{background:var(--pc);opacity:.55}
+  .dot.done{background:var(--pc)}
+  .pill .pstreak{font-family:var(--mono);font-size:13px;letter-spacing:-.02em}
+  .pill .pstreak.zero{color:var(--faint)}
+  .pill .broke{color:var(--alert);font-size:10.5px;margin-left:4px}
+
+  /* Progress */
+  .prog{margin:16px 2px 4px}
+  .prog .track{height:7px;background:var(--raised);border-radius:20px;overflow:hidden}
+  .prog .fill{height:100%;background:linear-gradient(90deg,var(--cjca-l),var(--cardio-l));
+    border-radius:20px;transition:width .35s ease}
+  .prog .lbl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;
+    color:var(--muted);margin-top:7px}
+  .prog .lbl b{color:var(--text);font-weight:600}
+
+  /* Nudge */
+  .nudge{margin:14px 0 2px;background:var(--alert-bg);border:1px solid #4a3d1c;
+    border-left:3px solid var(--alert);border-radius:10px;padding:11px 12px;display:flex;gap:10px;align-items:flex-start}
+  .nudge .txt{font-size:13.5px;line-height:1.45;color:#F0DCA8}
+  .nudge .txt b{color:var(--alert);font-weight:600}
+  .nudge .x{margin-left:auto;color:#B79A5A;font-size:20px;line-height:1;padding:0 2px;flex:0 0 auto}
+
+  /* Section head */
+  .shead{font-family:var(--serif);font-size:15px;font-weight:500;color:var(--muted);
+    margin:24px 2px 11px;letter-spacing:.01em;display:flex;justify-content:space-between;align-items:baseline}
+  .shead .c{font-family:var(--mono);font-size:13px;color:var(--faint)}
+
+  /* Task card */
+  .card{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--r);padding:13px 13px 13px 15px;margin-bottom:9px;position:relative;border-left:4px solid var(--tc)}
+  .card.done{background:var(--raised);border-color:var(--line)}
+  .card .body{flex:1;min-width:0}
+  .card .eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--tcl);
+    display:flex;align-items:center;gap:7px}
+  .card .opt{font-weight:600;color:var(--faint);letter-spacing:.04em;border:1px solid var(--border);
+    border-radius:20px;padding:1px 6px;font-size:9px}
+  .card .nm{font-size:15.5px;margin-top:3px;font-weight:500;line-height:1.3}
+  .card.done .nm{color:var(--muted)}
+  .card .meta{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-top:5px;
+    display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .card .meta .logged{color:var(--tcl)}
+  .card .plan{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+  .toggle{width:30px;height:30px;flex:0 0 auto;border-radius:50%;border:2px solid var(--tc);
+    display:grid;place-items:center;background:transparent;transition:background .15s,transform .1s}
+  .toggle:active{transform:scale(.9)}
+  .toggle.on{background:var(--tc)}
+  .toggle .ck{width:15px;height:15px;stroke:#0E1117;stroke-width:3;fill:none;opacity:0;
+    stroke-linecap:round;stroke-linejoin:round}
+  .toggle.on .ck{opacity:1}
+  .taprow{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left}
+
+  /* Cardio */
+  .actbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+  .actbtn{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 6px;
+    display:flex;flex-direction:column;align-items:center;gap:5px;border-top:2px solid var(--ac)}
+  .actbtn:active{background:var(--raised)}
+  .actbtn .ico{font-size:19px;line-height:1}
+  .actbtn .lb{font-size:12px;font-weight:600;color:var(--acl)}
+  .actcard{display:flex;gap:12px;align-items:center;background:var(--raised);border:1px solid var(--line);
+    border-radius:12px;padding:11px 12px 11px 14px;margin-bottom:8px;border-left:4px solid var(--ac)}
+  .actcard .ico{font-size:18px;flex:0 0 auto}
+  .actcard .body{flex:1;min-width:0}
+  .actcard .t{font-size:14.5px;font-weight:600}
+  .actcard .d{font-family:var(--mono);font-size:12px;color:var(--acl);margin-top:3px;
+    display:flex;gap:9px;flex-wrap:wrap}
+  .actcard .d .tm{color:var(--faint)}
+  .actcard .chev{color:var(--faint);font-size:15px}
+  .actempty{font-family:var(--mono);font-size:12px;color:var(--faint);padding:2px 2px 4px}
+
+  /* Prayers */
+  .prayers{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+  .pray{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 4px 9px;
+    text-align:center;transition:background .15s;min-height:66px;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:4px}
+  .pray.on{background:var(--prayer);border-color:var(--prayer-l)}
+  .pray .pn{font-size:12px;font-weight:600}
+  .pray.on .pn{color:#fff}
+  .pray .pt{font-family:var(--mono);font-size:10.5px;color:var(--faint);min-height:13px}
+  .pray.on .pt{color:#D6DBF2}
+  .pray .ring{width:9px;height:9px;border-radius:50%;border:2px solid var(--prayer-l)}
+  .pray.on .ring{background:#fff;border-color:#fff}
+
+  /* Bottom nav */
+  .nav{position:fixed;left:0;right:0;bottom:0;background:rgba(14,17,23,.92);backdrop-filter:blur(12px);
+    border-top:1px solid var(--border);z-index:5}
+  .nav .inner{max-width:480px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;
+    padding:8px 16px calc(8px + env(safe-area-inset-bottom))}
+  .nav button{padding:11px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--muted);letter-spacing:.01em}
+  .nav button.active{background:var(--raised2);color:var(--text)}
+
+  /* Analytics */
+  .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:12px}
+  .panel h3{font-family:var(--serif);font-weight:500;font-size:16px;margin:0 0 3px}
+  .panel .sub{font-family:var(--mono);font-size:11.5px;color:var(--faint);margin-bottom:14px;
+    letter-spacing:.02em;text-transform:uppercase}
+  .selector{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .selector .arw{width:34px;height:34px;border:1px solid var(--border);border-radius:8px;display:grid;
+    place-items:center;font-size:16px;color:var(--muted);background:var(--raised)}
+  .selector .arw[disabled]{opacity:.3}
+  .selector .rng{flex:1;text-align:center;font-family:var(--mono);font-size:13px;color:var(--text)}
+  .segbtns{display:flex;gap:6px;margin-bottom:14px}
+  .segbtns button{flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;font-family:var(--mono);
+    font-size:12px;color:var(--muted);background:var(--raised)}
+  .segbtns button.on{background:var(--raised2);color:var(--text);border-color:var(--faint)}
+
+  .brow{margin-bottom:13px}
+  .brow .bh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+  .brow .bt{font-size:12.5px;font-weight:600;color:var(--bc)}
+  .brow .bv{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .brow .bv b{color:var(--text);font-weight:600}
+  .btrack{height:9px;background:var(--raised);border-radius:20px;position:relative;overflow:hidden}
+  .bfill{height:100%;border-radius:20px}
+  .btrack .plan-ghost{position:absolute;inset:0;border-radius:20px;
+    background:repeating-linear-gradient(90deg,transparent,transparent 4px,rgba(255,255,255,.04) 4px,rgba(255,255,255,.04) 8px)}
+  .pace{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--text);opacity:.55}
+
+  .srow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+  .srow:last-child{border-bottom:none}
+  .srow .sl{font-size:13px;font-weight:600;color:var(--bc)}
+  .srow .sv{font-family:var(--mono);font-size:13px;color:var(--text);display:flex;gap:13px;align-items:baseline}
+  .srow .sv .lng{color:var(--muted)}
+  .srow .sv .brk{color:var(--alert);font-size:11px}
+
+  .totrow{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;padding-top:12px;
+    border-top:1px solid var(--border);font-family:var(--mono);font-size:13px}
+  .totrow b{font-size:15px}
+  .onpace{color:var(--cjca-l)}
+  .offpace{color:var(--alert)}
+
+  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+  .kpi .k{background:var(--raised);border:1px solid var(--line);border-radius:10px;padding:11px 8px;text-align:center}
+  .kpi .kv{font-family:var(--mono);font-size:18px;font-weight:600;color:var(--kc)}
+  .kpi .kl{font-size:10.5px;color:var(--muted);margin-top:3px}
+
+  /* heatmap */
+  .heat{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .heat .hd{font-family:var(--mono);font-size:9.5px;color:var(--faint);text-align:center;text-transform:uppercase}
+  .heat .cell{aspect-ratio:1;border-radius:5px;border:1px solid var(--line)}
+  .heat .cell.today{outline:1.5px solid var(--prayer-l);outline-offset:1px}
+  .legend{display:flex;align-items:center;gap:6px;margin-top:12px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+  .legend .sw{width:13px;height:13px;border-radius:3px;border:1px solid var(--line)}
+
+  .storebar{font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center;margin:2px 0 6px;
+    display:flex;align-items:center;justify-content:center;gap:7px}
+  .storebar .d{width:7px;height:7px;border-radius:50%}
+  .storebar.ok .d{background:var(--cjca-l)}
+  .storebar.warn .d{background:var(--alert)}
+
+  /* Modal */
+  #modal:empty{display:none}
+  .scrim{position:fixed;inset:0;background:rgba(6,8,12,.6);z-index:20;display:flex;align-items:flex-end;
+    justify-content:center;animation:fade .18s ease}
+  .sheet{background:var(--surface);border:1px solid var(--border);border-bottom:none;border-radius:18px 18px 0 0;
+    width:100%;max-width:480px;padding:20px 18px calc(22px + env(safe-area-inset-bottom));
+    animation:rise .22s cubic-bezier(.2,.7,.3,1)}
+  .sheet .meyebrow{font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--tcl)}
+  .sheet h2{font-family:var(--serif);font-weight:500;font-size:20px;margin:5px 0 2px}
+  .sheet .mplan{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:14px}
+  .field{margin:2px 0 16px}
+  .field .fl{font-family:var(--mono);font-size:11px;color:var(--faint);text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px}
+  .stepper{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .stepper button{width:50px;height:50px;border-radius:12px;background:var(--raised2);border:1px solid var(--border);
+    font-size:24px;color:var(--text);display:grid;place-items:center;flex:0 0 auto}
+  .stepper .valwrap{text-align:center;flex:1}
+  .stepper input{width:100%;background:transparent;border:none;text-align:center;font-family:var(--mono);
+    font-size:32px;color:var(--text);font-variant-numeric:tabular-nums}
+  .stepper input:focus{outline:none}
+  .stepper .unit{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:-2px}
+  .mactions{display:flex;gap:10px;margin-top:4px}
+  .mactions button{flex:1;padding:14px;border-radius:12px;font-size:15px;font-weight:600}
+  .btn-primary{background:var(--tc);color:#0E1117}
+  .btn-ghost{background:var(--raised2);color:var(--text);border:1px solid var(--border)}
+  .btn-danger{background:transparent;color:var(--gym-l);border:1px solid var(--border);flex:0 0 auto;padding:14px 16px}
+  .sheet .tin{width:100%;background:var(--raised2);border:1px solid var(--border);border-radius:12px;padding:14px;
+    font-size:17px;color:var(--text);margin:6px 0 18px}
+
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes rise{from{transform:translateY(24px)}to{transform:translateY(0)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app"><div class="boot">loading…</div></div>
+<nav class="nav"><div class="inner">
+  <button data-act="view" data-view="today">Today</button>
+  <button data-act="view" data-view="analytics">Analytics</button>
+</div></nav>
+<div id="modal"></div>
+
+<script>
+"use strict";
+(function(){
+  /* ============ constants ============ */
+  var TRACKS = {
+    cjca:    {label:'CJCA',    hx:'#1F9D6E', lx:'#5FD3A5'},
+    gym:     {label:'Gym',     hx:'#D65F2E', lx:'#F0946B'},
+    italian: {label:'Italian', hx:'#8C7A2E', lx:'#D8C36A'},
+    chinese: {label:'Chinese', hx:'#A63D5C', lx:'#E07E9A'},
+    cardio:  {label:'Cardio',  hx:'#2E6FB0', lx:'#6FA8E0'},
+    prayer:  {label:'Prayer',  hx:'#4B5AA6', lx:'#8C98D8'}
+  };
+  var ACT = {
+    running:  {label:'Run',  verb:'New run',  ico:'🏃', hx:'#2E6FB0', lx:'#6FA8E0', mode:'pace'},
+    cycling:  {label:'Ride', verb:'New ride', ico:'🚴', hx:'#149A9A', lx:'#57C9C9', mode:'speed'},
+    swimming: {label:'Swim', verb:'New swim', ico:'🏊', hx:'#3AA5C4', lx:'#78CBE6', mode:'pace'}
+  };
+  var ORDER = ['cjca','gym','italian','chinese'];          // checklist display order
+  var PILL_ORDER = ['cjca','gym','italian','chinese','cardio','prayer'];
+  var PRAYERS = ['fajr','dhuhr','asr','maghrib','isha'];
+  var PRAYER_LABEL = {fajr:'Fajr',dhuhr:'Dhuhr',asr:'Asr',maghrib:'Maghrib',isha:'Isha'};
+  // weekday (0=Sun) -> [track, name, plannedMin, optional]
+  var SCHED = {
+    1:[['gym','Back & Biceps',70,false],['cjca','Session',100,false],['italian','Grammar + shadowing',135,false],['chinese','Study',60,true]],
+    2:[['cjca','Session',100,false],['italian','Grammar + listening',165,false],['chinese','Study',60,true]],
+    3:[['gym','Shoulders & Triceps',70,false],['cjca','Session',100,false],['italian','Grammar + shadowing',135,false],['chinese','Study',60,true]],
+    4:[['cjca','Session',100,false],['italian','Grammar + listening',165,false],['chinese','Study',60,true]],
+    5:[['gym','Legs',75,false],['cjca','Session',100,false],['italian','Grammar + shadowing',135,false],['chinese','Study',60,true]],
+    6:[['gym','Chest & Abs',60,false],['cjca','Deep lab',110,false],['italian','Tutor session',180,false],['chinese','Study',60,true]],
+    0:[['gym','Arms (optional)',35,true],['italian','Passive listening',60,false],['chinese','Anki review',40,true]]
+  };
+  var TARGETS = {italian:350, chinese:140, cjca:210}; // season-total hours
+  var SEASON_START = new Date(2026,7,1);
+  var SEASON_END   = new Date(2026,11,31);
+
+  /* ============ storage: API + localStorage write-through ============ */
+  var backendInfo = null; // 'redis' | 'memory' | 'local'
+  function lsGet(k){ try{ var v=localStorage.getItem('dt:'+k); return v?JSON.parse(v):null; }catch(e){ return null; } }
+  function lsSet(k,v){ try{ localStorage.setItem('dt:'+k, JSON.stringify(v)); }catch(e){} }
+
+  function apiGetDays(from,to){
+    return fetch('/api/days?from='+from+'&to='+to).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+      .then(function(j){ backendInfo=j.backend||'memory'; return j.data||{}; })
+      .catch(function(){ backendInfo=backendInfo||'local'; return null; });
+  }
+  function apiGetSettings(){
+    return fetch('/api/settings').then(function(r){ if(!r.ok) throw 0; return r.json(); })
+      .then(function(j){ if(j.backend) backendInfo=j.backend; return j.data; })
+      .catch(function(){ return null; });
+  }
+  function apiSaveDay(key,val){
+    lsSet('day:'+key, val);
+    fetch('/api/day',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date:key,data:val})})
+      .then(function(r){ return r.ok?r.json():null; })
+      .then(function(j){ if(j&&j.backend) backendInfo=j.backend; })
+      .catch(function(){ backendInfo='local'; });
+  }
+  function apiSaveSettings(val){
+    lsSet('settings', val);
+    fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:val})}).catch(function(){});
+  }
+
+  /* ============ date utils ============ */
+  function startOfDay(d){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()); }
+  function addDays(d,n){ return new Date(d.getFullYear(),d.getMonth(),d.getDate()+n); }
+  function fmt(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  function parseKey(k){ var p=k.split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+  function dayDiff(a,b){ return Math.round((startOfDay(a)-startOfDay(b))/86400000); }
+  var MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var DOWL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var TODAY, TODAY_KEY; // set at boot
+
+  function fmtDur(m){
+    m=Math.round(m||0);
+    if(m<=0) return '0m';
+    if(m<60) return m+'m';
+    var h=Math.floor(m/60), r=m%60;
+    return r? h+'h'+String(r).padStart(2,'0') : h+'h';
+  }
+  function fmtKm(k){ k=+k||0; return (Math.round(k*10)/10).toString().replace(/\.0$/,'')+' km'; }
+  function paceStr(km,min){ if(!km||!min) return ''; var s=min/km; var mm=Math.floor(s); var ss=Math.round((s-mm)*60);
+    if(ss===60){mm++;ss=0;} return mm+':'+String(ss).padStart(2,'0')+' /km'; }
+  function speedStr(km,min){ if(!km||!min) return ''; return (Math.round(km/(min/60)*10)/10)+' km/h'; }
+
+  /* ============ data model ============ */
+  var cacheRaw={}, blobs={}, ALL_KEYS=[];
+  var settings={name:'Anwar'};
+
+  function templateFor(key){
+    var d=parseKey(key);
+    var list=(SCHED[d.getDay()]||[]).slice().sort(function(a,b){return ORDER.indexOf(a[0])-ORDER.indexOf(b[0]);});
+    var tasks=list.map(function(t){ return {id:t[0],track:t[0],name:t[1],plannedMin:t[2],optional:!!t[3],done:false,actualMin:null,loggedAt:null}; });
+    var pr={}; PRAYERS.forEach(function(p){ pr[p]={done:false,loggedAt:null}; });
+    return {tasks:tasks,prayers:pr,activities:[],nudgeDismissed:false};
+  }
+  function getBlob(key){
+    if(blobs[key]) return blobs[key];
+    var t=templateFor(key), raw=cacheRaw[key];
+    if(raw){
+      var byId={}; (raw.tasks||[]).forEach(function(x){ byId[x.id||x.track]=x; });
+      t.tasks.forEach(function(task){ var s=byId[task.track]; if(s){ task.done=!!s.done; task.actualMin=(s.actualMin!=null?s.actualMin:null); task.loggedAt=s.loggedAt||null; } });
+      if(raw.prayers){ PRAYERS.forEach(function(p){ if(raw.prayers[p]) t.prayers[p]={done:!!raw.prayers[p].done,loggedAt:raw.prayers[p].loggedAt||null}; }); }
+      if(Array.isArray(raw.activities)){ t.activities=raw.activities.map(function(a){ return {id:a.id,type:a.type,km:+a.km||0,min:+a.min||0,loggedAt:a.loggedAt||null}; }); }
+      t.nudgeDismissed=!!raw.nudgeDismissed;
+    }
+    blobs[key]=t; return t;
+  }
+  function saveDay(key){ cacheRaw[key]=blobs[key]; apiSaveDay(key, blobs[key]); }
+
+  function scheduledHas(d,track){ var l=SCHED[d.getDay()]||[]; for(var i=0;i<l.length;i++) if(l[i][0]===track) return true; return false; }
+  function taskDone(key,track){ var b=getBlob(key); for(var i=0;i<b.tasks.length;i++) if(b.tasks[i].track===track) return b.tasks[i].done; return false; }
+  function prayerDoneCount(key){ var b=getBlob(key),n=0; PRAYERS.forEach(function(p){ if(b.prayers[p]&&b.prayers[p].done) n++; }); return n; }
+  function activitiesFor(key){ return getBlob(key).activities||[]; }
+
+  /* ============ computations ============ */
+  function statsFromHistory(h){
+    var pending=false;
+    if(h.length && h[h.length-1].isToday && !h[h.length-1].done){ pending=true; h=h.slice(0,-1); }
+    var cur=0,i;
+    for(i=h.length-1;i>=0;i--){ if(h[i].done) cur++; else break; }
+    var lng=0,run=0; for(i=0;i<h.length;i++){ if(h[i].done){ run++; if(run>lng)lng=run; } else run=0; } if(cur>lng) lng=cur;
+    var broken=false,lost=0;
+    if(cur===0 && h.length && !h[h.length-1].done){ broken=true; for(i=h.length-2;i>=0;i--){ if(h[i].done) lost++; else break; } }
+    return {current:cur,longest:lng,broken:broken,lost:lost,pending:pending};
+  }
+  function trackStats(track){
+    var out=[],d=new Date(SEASON_START);
+    while(d<=TODAY){ if(scheduledHas(d,track)) out.push({done:taskDone(fmt(d),track),isToday:dayDiff(d,TODAY)===0}); d=addDays(d,1); }
+    return statsFromHistory(out);
+  }
+  function prayerStats(){
+    var out=[],d=new Date(SEASON_START);
+    while(d<=TODAY){ out.push({done:prayerDoneCount(fmt(d))===5,isToday:dayDiff(d,TODAY)===0}); d=addDays(d,1); }
+    return statsFromHistory(out);
+  }
+  function cardioStats(){
+    var out=[],d=new Date(SEASON_START);
+    while(d<=TODAY){ out.push({done:activitiesFor(fmt(d)).length>0,isToday:dayDiff(d,TODAY)===0}); d=addDays(d,1); }
+    return statsFromHistory(out);
+  }
+
+  function weekMonday(offset){ var dow=(TODAY.getDay()+6)%7; return addDays(TODAY,-dow+offset*7); }
+  function weekAgg(offset){
+    var mon=weekMonday(offset), res={}, totP=0,totL=0,elapsedP=0,elapsedL=0;
+    ORDER.forEach(function(t){ res[t]={plan:0,log:0}; });
+    var cardio={running:{km:0,min:0},cycling:{km:0,min:0},swimming:{km:0,min:0}};
+    for(var i=0;i<7;i++){
+      var d=addDays(mon,i); if(d<SEASON_START) continue;
+      var past=dayDiff(d,TODAY)<=0, b=getBlob(fmt(d));
+      b.tasks.forEach(function(task){
+        res[task.track].plan+=task.plannedMin; if(!task.optional){ totP+=task.plannedMin; if(past) elapsedP+=task.plannedMin; }
+        if(task.done && task.actualMin!=null){ res[task.track].log+=task.actualMin; if(!task.optional){ totL+=task.actualMin; if(past) elapsedL+=task.actualMin; } }
+      });
+      b.activities.forEach(function(a){ if(cardio[a.type]){ cardio[a.type].km+=+a.km||0; cardio[a.type].min+=+a.min||0; } });
+    }
+    return {mon:mon,res:res,cardio:cardio,totP:totP,totL:totL,elapsedP:elapsedP,elapsedL:elapsedL};
+  }
+  function completion(days){
+    var res={}; ['cjca','gym','italian','chinese','prayer'].forEach(function(t){ res[t]={sched:0,done:0}; });
+    ALL_KEYS.slice(-days).forEach(function(k){
+      var b=getBlob(k);
+      b.tasks.forEach(function(task){ if(res[task.track]){ res[task.track].sched++; if(task.done) res[task.track].done++; } });
+      res.prayer.sched+=5; res.prayer.done+=prayerDoneCount(k);
+    });
+    return res;
+  }
+  function cumulative(){
+    var res={cjca:0,gym:0,italian:0,chinese:0};
+    var cardio={running:{km:0,min:0},cycling:{km:0,min:0},swimming:{km:0,min:0}};
+    ALL_KEYS.forEach(function(k){ var b=getBlob(k);
+      b.tasks.forEach(function(task){ if(task.done&&task.actualMin!=null&&res[task.track]!=null) res[task.track]+=task.actualMin; });
+      b.activities.forEach(function(a){ if(cardio[a.type]){ cardio[a.type].km+=+a.km||0; cardio[a.type].min+=+a.min||0; } });
+    });
+    return {time:res,cardio:cardio};
+  }
+
+  /* ============ state ============ */
+  var state={view:'today', weekOffset:0, monthOffset:0, complWin:7};
+
+  /* ============ render: today ============ */
+  function greetingWord(h){ if(h>=5&&h<12) return 'Good morning'; if(h>=12&&h<18) return 'Good afternoon'; return 'Good evening'; }
+
+  function pillHTML(track){
+    var T=TRACKS[track], vars='--pc:'+T.hx+';--pcl:'+T.lx, st, streak, note='';
+    if(track==='prayer'){
+      var n=prayerDoneCount(TODAY_KEY); st=n===0?'empty':(n===5?'done':'partial');
+      var ps=prayerStats(); streak=ps.current; if(ps.broken&&ps.lost>0) note='<span class="broke">✕'+ps.lost+'</span>';
+    } else if(track==='cardio'){
+      var acts=activitiesFor(TODAY_KEY); st=acts.length?'done':'empty';
+      var cs=cardioStats(); streak=cs.current;
+    } else {
+      var sched=scheduledHas(TODAY,track);
+      st = !sched ? 'rest' : (taskDone(TODAY_KEY,track)?'done':'empty');
+      var s=trackStats(track); streak=s.current; if(s.broken&&s.lost>0) note='<span class="broke">✕'+s.lost+'</span>';
+    }
+    var zero=streak>0?'':' zero', txt=streak>0?'🔥'+streak:'·0';
+    return '<div class="pill" style="'+vars+'"><div class="ptop"><span class="plabel">'+T.label+'</span>'+
+      '<span class="dot '+st+'"></span></div><div class="pstreak'+zero+'">'+txt+note+'</div></div>';
+  }
+
+  function taskCardHTML(task){
+    var T=TRACKS[task.track], vars='--tc:'+T.hx+';--tcl:'+T.lx, meta='';
+    if(task.done){
+      var tm=task.loggedAt?new Date(task.loggedAt):null;
+      var tmS=tm?String(tm.getHours()).padStart(2,'0')+':'+String(tm.getMinutes()).padStart(2,'0'):'--:--';
+      meta='<div class="meta"><span class="logged">'+fmtDur(task.actualMin!=null?task.actualMin:task.plannedMin)+' logged</span><span>at '+tmS+'</span></div>';
+    }
+    var optTag=task.optional?'<span class="opt">optional</span>':'';
+    return '<div class="card'+(task.done?' done':'')+'" style="'+vars+'">'+
+      '<button class="taprow" data-act="open-log" data-track="'+task.track+'">'+
+        '<span class="toggle'+(task.done?' on':'')+'"><svg class="ck" viewBox="0 0 18 18"><path d="M3 9l4 4 8-9"/></svg></span>'+
+        '<span class="body"><span class="eyebrow">'+T.label+optTag+'</span><div class="nm">'+task.name+'</div>'+meta+'</span>'+
+      '</button><span class="plan">~'+fmtDur(task.plannedMin)+'</span></div>';
+  }
+
+  function activityCardHTML(a){
+    var M=ACT[a.type]; if(!M) return '';
+    var tm=a.loggedAt?new Date(a.loggedAt):null;
+    var tmS=tm?String(tm.getHours()).padStart(2,'0')+':'+String(tm.getMinutes()).padStart(2,'0'):'';
+    var extra=a.mode==='speed'||M.mode==='speed'?speedStr(a.km,a.min):paceStr(a.km,a.min);
+    return '<button class="actcard" style="--ac:'+M.hx+';--acl:'+M.lx+'" data-act="edit-activity" data-id="'+a.id+'">'+
+      '<span class="ico">'+M.ico+'</span><span class="body"><div class="t">'+M.label+'</div>'+
+      '<div class="d"><span>'+fmtKm(a.km)+'</span><span>'+fmtDur(a.min)+'</span>'+(extra?'<span>'+extra+'</span>':'')+
+      (tmS?'<span class="tm">'+tmS+'</span>':'')+'</div></span><span class="chev">›</span></button>';
+  }
+
+  function prayerHTML(){
+    var b=getBlob(TODAY_KEY), out='';
+    PRAYERS.forEach(function(p){
+      var pr=b.prayers[p], on=pr&&pr.done, t='';
+      if(on&&pr.loggedAt){ var d=new Date(pr.loggedAt); t=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+      out+='<button class="pray'+(on?' on':'')+'" data-act="pray" data-p="'+p+'"><span class="ring"></span>'+
+        '<span class="pn">'+PRAYER_LABEL[p]+'</span><span class="pt">'+(on?t:'')+'</span></button>';
+    });
+    return '<div class="prayers">'+out+'</div>';
+  }
+
+  function nudgeHTML(total,done){
+    var b=getBlob(TODAY_KEY);
+    if((new Date()).getHours()<18 || b.nudgeDismissed || done>=total/2) return '';
+    var out=[]; b.tasks.forEach(function(t){ if(!t.optional && !t.done) out.push(TRACKS[t.track].label); });
+    var pc=prayerDoneCount(TODAY_KEY); if(pc<5) out.push('Prayer '+pc+'/5');
+    if(!out.length) return '';
+    return '<div class="nudge"><div class="txt">It’s past 6pm and today is only <b>'+done+' of '+total+'</b> done. Still open: <b>'+out.join(', ')+'</b>.</div>'+
+      '<button class="x" data-act="dismiss-nudge" aria-label="Dismiss">×</button></div>';
+  }
+
+  function renderToday(){
+    var now=new Date(), b=getBlob(TODAY_KEY);
+    var required=b.tasks.filter(function(t){return !t.optional;});
+    var total=required.length+5, done=0;
+    required.forEach(function(t){ if(t.done)done++; }); done+=prayerDoneCount(TODAY_KEY);
+    var pct=total?Math.round(done/total*100):0;
+    var pills=PILL_ORDER.map(pillHTML).join('');
+    var cards=b.tasks.length? b.tasks.map(taskCardHTML).join('')
+      : '<div class="card" style="--tc:var(--faint);--tcl:var(--muted)"><span class="body"><div class="nm" style="color:var(--muted)">Rest day — no scheduled sessions</div></span></div>';
+    var acts=activitiesFor(TODAY_KEY);
+    var actList = acts.length? acts.map(activityCardHTML).join('') : '<div class="actempty">No cardio logged yet today.</div>';
+    var actbtns=['running','cycling','swimming'].map(function(ty){ var M=ACT[ty];
+      return '<button class="actbtn" style="--ac:'+M.hx+';--acl:'+M.lx+'" data-act="add-activity" data-type="'+ty+'">'+
+        '<span class="ico">'+M.ico+'</span><span class="lb">+ '+M.label+'</span></button>'; }).join('');
+
+    return ''+
+    '<div class="greet"><h1>'+greetingWord(now.getHours())+', <span class="name" style="color:var(--italian-l)">'+esc(settings.name)+'</span>'+
+      '<button class="edit" data-act="edit-name">edit</button></h1>'+
+      '<div class="date">'+DOWL[TODAY.getDay()]+' · '+MON[TODAY.getMonth()]+' '+TODAY.getDate()+', '+TODAY.getFullYear()+'</div></div>'+
+    '<div class="pills">'+pills+'</div>'+
+    '<div class="prog"><div class="track"><div class="fill" style="width:'+pct+'%"></div></div>'+
+      '<div class="lbl"><span>Today</span><span><b>'+done+'</b> / '+total+' core done</span></div></div>'+
+    nudgeHTML(total,done)+
+    '<div class="shead">Sessions</div>'+cards+
+    '<div class="shead">Cardio <span class="c">'+acts.length+' today</span></div>'+
+      '<div class="actbtns">'+actbtns+'</div>'+actList+
+    '<div class="shead">Prayers <span class="c">'+prayerDoneCount(TODAY_KEY)+' / 5</span></div>'+prayerHTML();
+  }
+
+  /* ============ render: analytics ============ */
+  function barRow(label,color,lightc,log,plan){
+    var pct=plan>0?Math.min(100,log/plan*100):(log>0?100:0);
+    return '<div class="brow" style="--bc:'+lightc+'"><div class="bh"><span class="bt">'+label+'</span>'+
+      '<span class="bv"><b>'+fmtDur(log)+'</b> / '+fmtDur(plan)+'</span></div>'+
+      '<div class="btrack"><div class="plan-ghost"></div><div class="bfill" style="width:'+pct+'%;background:'+color+'"></div></div></div>';
+  }
+
+  function renderAnalytics(){
+    var out='';
+    // storage status
+    var ok = backendInfo==='blob';
+    var warn = backendInfo==='memory';
+    var stTxt = ok?'Synced to Vercel Blob':(warn?'No storage attached — this device only':'Local device only');
+    out+='<div class="storebar '+(ok?'ok':'warn')+'"><span class="d"></span>'+stTxt+'</div>';
+
+    // weekly hours
+    var w=weekAgg(state.weekOffset), mon=w.mon, sun=addDays(mon,6);
+    var rng=MON[mon.getMonth()]+' '+mon.getDate()+' – '+(mon.getMonth()!==sun.getMonth()?MON[sun.getMonth()]+' ':'')+sun.getDate();
+    var wlabel=state.weekOffset===0?'This week':(state.weekOffset===-1?'Last week':Math.abs(state.weekOffset)+' weeks ago');
+    var bars=ORDER.map(function(t){ return barRow(TRACKS[t].label+(t==='chinese'?' (opt)':''),TRACKS[t].hx,TRACKS[t].lx,w.res[t].log,w.res[t].plan); }).join('');
+    var paceNote='';
+    if(state.weekOffset===0 && w.elapsedP>0){
+      var okp=w.elapsedL>=w.elapsedP*0.9;
+      paceNote='<div style="text-align:right;margin-top:4px;font-family:var(--mono);font-size:11px" class="'+(okp?'onpace':'offpace')+'">'+
+        (okp?'on pace':'behind')+' · '+fmtDur(w.elapsedL)+' of '+fmtDur(w.elapsedP)+' due so far</div>';
+    }
+    out+='<div class="panel"><h3>Hours this week</h3><div class="sub">Logged vs planned (core tracks)</div>'+
+      '<div class="selector"><button class="arw" data-act="week" data-d="-1">‹</button><span class="rng">'+wlabel+' · '+rng+'</span>'+
+      '<button class="arw" data-act="week" data-d="1"'+(state.weekOffset>=0?' disabled':'')+'>›</button></div>'+bars+
+      '<div class="totrow"><span>Core total</span><span><b>'+fmtDur(w.totL)+'</b> / '+fmtDur(w.totP)+'</span></div>'+paceNote+'</div>';
+
+    // cardio week
+    var cw=w.cardio, cKm=cw.running.km+cw.cycling.km+cw.swimming.km, cMin=cw.running.min+cw.cycling.min+cw.swimming.min;
+    var cardioRows=['running','cycling','swimming'].map(function(ty){ var M=ACT[ty], c=cw[ty];
+      return '<div class="srow" style="--bc:'+M.lx+'"><span class="sl">'+M.ico+' '+M.label+'</span>'+
+        '<span class="sv"><span>'+fmtKm(c.km)+'</span><span class="lng">'+fmtDur(c.min)+'</span></span></div>'; }).join('');
+    out+='<div class="panel"><h3>Cardio this week</h3><div class="sub">Distance &amp; time by activity</div>'+
+      '<div class="kpi"><div class="k" style="--kc:var(--cardio-l)"><div class="kv">'+(Math.round(cKm*10)/10)+'</div><div class="kl">km total</div></div>'+
+      '<div class="k" style="--kc:var(--cardio-l)"><div class="kv">'+fmtDur(cMin)+'</div><div class="kl">time</div></div>'+
+      '<div class="k" style="--kc:var(--cardio-l)"><div class="kv">🔥'+cardioStats().current+'</div><div class="kl">active streak</div></div></div>'+
+      cardioRows+'</div>';
+
+    // streaks
+    var srows=PILL_ORDER.map(function(t){
+      var s = t==='prayer'?prayerStats():(t==='cardio'?cardioStats():trackStats(t));
+      var brk=s.broken&&s.lost>0?'<span class="brk">broke (was '+s.lost+')</span>':'';
+      var sfx = t==='prayer'?' (5/day)':(t==='cardio'?' (any day)':(t==='chinese'?' (opt)':''));
+      return '<div class="srow" style="--bc:'+TRACKS[t].lx+'"><span class="sl">'+TRACKS[t].label+sfx+'</span>'+
+        '<span class="sv"><span>🔥'+s.current+'</span><span class="lng">best '+s.longest+'</span>'+brk+'</span></div>'; }).join('');
+    out+='<div class="panel"><h3>Streaks</h3><div class="sub">Consecutive days completed</div>'+srows+'</div>';
+
+    // completion
+    var comp=completion(state.complWin);
+    var crows=['cjca','gym','italian','chinese','prayer'].map(function(t){ var r=comp[t], pct=r.sched?Math.round(r.done/r.sched*100):0;
+      return '<div class="brow" style="--bc:'+TRACKS[t].lx+'"><div class="bh"><span class="bt">'+TRACKS[t].label+'</span>'+
+        '<span class="bv"><b>'+pct+'%</b> · '+r.done+'/'+r.sched+'</span></div>'+
+        '<div class="btrack"><div class="bfill" style="width:'+pct+'%;background:'+TRACKS[t].hx+'"></div></div></div>'; }).join('');
+    out+='<div class="panel"><h3>Completion rate</h3><div class="sub">Items checked in window</div>'+
+      '<div class="segbtns"><button class="'+(state.complWin===7?'on':'')+'" data-act="compl" data-w="7">Last 7 days</button>'+
+      '<button class="'+(state.complWin===30?'on':'')+'" data-act="compl" data-w="30">Last 30 days</button></div>'+crows+'</div>';
+
+    // season totals
+    var cum=cumulative();
+    var totalDays=dayDiff(SEASON_END,SEASON_START)+1, elapsed=Math.max(1,dayDiff(TODAY,SEASON_START)+1), frac=Math.min(1,elapsed/totalDays);
+    var srows2=['cjca','gym','italian','chinese'].map(function(t){ var hLog=cum.time[t]/60, tgt=TARGETS[t];
+      if(tgt){ var pct=Math.min(100,hLog/tgt*100), pace=Math.round(tgt*frac), okp=hLog>=tgt*frac*0.9;
+        return '<div class="brow" style="--bc:'+TRACKS[t].lx+'"><div class="bh"><span class="bt">'+TRACKS[t].label+(t==='chinese'?' (opt)':'')+'</span>'+
+          '<span class="bv"><b>'+Math.round(hLog)+'h</b> / '+tgt+'h <span class="'+(okp?'onpace':'offpace')+'">'+(okp?'✓':'↓')+'</span></span></div>'+
+          '<div class="btrack"><div class="bfill" style="width:'+pct+'%;background:'+TRACKS[t].hx+'"></div>'+
+          '<div class="pace" style="left:'+(frac*100)+'%" title="pace '+pace+'h"></div></div></div>'; }
+      return '<div class="brow" style="--bc:'+TRACKS[t].lx+'"><div class="bh"><span class="bt">'+TRACKS[t].label+'</span>'+
+        '<span class="bv"><b>'+fmtDur(cum.time[t])+'</b> total</span></div>'+
+        '<div class="btrack"><div class="bfill" style="width:'+Math.min(100,hLog/50*100)+'%;background:'+TRACKS[t].hx+'"></div></div></div>'; }).join('');
+    var cc=cum.cardio, ckmT=cc.running.km+cc.cycling.km+cc.swimming.km;
+    var cardioCum=['running','cycling','swimming'].map(function(ty){ var M=ACT[ty],c=cc[ty];
+      return '<div class="srow" style="--bc:'+M.lx+'"><span class="sl">'+M.ico+' '+M.label+'</span>'+
+        '<span class="sv"><span>'+fmtKm(c.km)+'</span><span class="lng">'+fmtDur(c.min)+'</span></span></div>'; }).join('');
+    out+='<div class="panel"><h3>Season total</h3><div class="sub">Since Aug 1 · tick = expected pace</div>'+srows2+
+      '<div class="totrow"><span>Cardio distance</span><span><b>'+(Math.round(ckmT*10)/10)+' km</b></span></div>'+cardioCum+'</div>';
+
+    // prayer heatmap
+    out+=prayerPanelHTML();
+    return out;
+  }
+
+  function prayerPanelHTML(){
+    var ref=new Date(TODAY.getFullYear(),TODAY.getMonth()+state.monthOffset,1), y=ref.getFullYear(), m=ref.getMonth();
+    var lead=(new Date(y,m,1).getDay()+6)%7, daysIn=new Date(y,m+1,0).getDate();
+    var heads=['M','T','W','T','F','S','S'].map(function(h){return '<div class="hd">'+h+'</div>';}).join('');
+    var cells=''; for(var i=0;i<lead;i++) cells+='<div></div>';
+    for(var day=1;day<=daysIn;day++){
+      var d=new Date(y,m,day), k=fmt(d), isToday=dayDiff(d,TODAY)===0, future=d>TODAY, before=d<SEASON_START;
+      var cnt=(future||before)?-1:prayerDoneCount(k), op=cnt<=0?0:cnt/5;
+      var bg=cnt<=0?'transparent':'rgba(75,90,166,'+(0.18+op*0.82).toFixed(2)+')';
+      var bord=cnt===5?'border-color:var(--prayer-l);':'';
+      cells+='<div class="cell'+(isToday?' today':'')+'" style="background:'+bg+';'+bord+'" title="'+k+': '+(cnt<0?'—':cnt+'/5')+'"></div>';
+    }
+    var canNext=state.monthOffset<0;
+    return '<div class="panel"><h3>Prayer month</h3><div class="sub">Days with all 5 prayers logged</div>'+
+      '<div class="selector"><button class="arw" data-act="month" data-d="-1">‹</button><span class="rng">'+MON[m]+' '+y+'</span>'+
+      '<button class="arw" data-act="month" data-d="1"'+(canNext?'':' disabled')+'>›</button></div>'+
+      '<div class="heat">'+heads+cells+'</div>'+
+      '<div class="legend"><span>0/5</span><span class="sw" style="background:transparent"></span>'+
+      '<span class="sw" style="background:rgba(75,90,166,.45)"></span>'+
+      '<span class="sw" style="background:rgba(75,90,166,1);border-color:var(--prayer-l)"></span><span>5/5</span></div></div>';
+  }
+
+  /* ============ modals ============ */
+  var modalEl=document.getElementById('modal');
+  function closeModal(){ modalEl.innerHTML=''; }
+
+  function openLog(track){
+    var b=getBlob(TODAY_KEY), task=null;
+    for(var i=0;i<b.tasks.length;i++) if(b.tasks[i].track===track) task=b.tasks[i];
+    if(!task) return;
+    var T=TRACKS[track], vars='--tc:'+T.hx+';--tcl:'+T.lx;
+    var val=task.done&&task.actualMin!=null?task.actualMin:task.plannedMin;
+    var rm=task.done?'<button class="btn-danger" data-act="log-remove" data-track="'+track+'">Uncheck</button>':'';
+    modalEl.innerHTML='<div class="scrim" data-act="scrim"><div class="sheet" style="'+vars+'" role="dialog" aria-modal="true">'+
+      '<div class="meyebrow">'+T.label+(task.optional?' · optional':'')+'</div><h2>'+task.name+'</h2>'+
+      '<div class="mplan">Planned ~'+fmtDur(task.plannedMin)+' · how long did it take?</div>'+
+      '<div class="field"><div class="stepper"><button data-act="step" data-t="logmin" data-s="-5" aria-label="less">−</button>'+
+        '<div class="valwrap"><input id="logmin" class="mono" type="number" inputmode="numeric" value="'+val+'" min="0"><div class="unit">minutes</div></div>'+
+        '<button data-act="step" data-t="logmin" data-s="5" aria-label="more">+</button></div></div>'+
+      '<div class="mactions">'+rm+'<button class="btn-primary" data-act="log-save" data-track="'+track+'">'+(task.done?'Save':'Log & check')+'</button></div></div></div>';
+    focusInput('logmin');
+  }
+
+  function openActivity(type,id){
+    var M=ACT[type]; var existing=null;
+    if(id){ activitiesFor(TODAY_KEY).forEach(function(a){ if(a.id===id){ existing=a; type=a.type; } }); M=ACT[type]; }
+    var km=existing?existing.km:0, min=existing?existing.min:(type==='swimming'?30:40);
+    var vars='--tc:'+M.hx+';--tcl:'+M.lx;
+    var rm=existing?'<button class="btn-danger" data-act="del-activity" data-id="'+id+'">Delete</button>':'';
+    var kmStep = type==='swimming'?0.5:1;
+    modalEl.innerHTML='<div class="scrim" data-act="scrim"><div class="sheet" style="'+vars+'" role="dialog" aria-modal="true">'+
+      '<div class="meyebrow">'+M.ico+' '+M.label+'</div><h2>'+(existing?'Edit ':M.verb)+'</h2>'+
+      '<div class="mplan">Log distance and time — timestamp is recorded automatically.</div>'+
+      '<div class="field"><div class="fl">Distance</div><div class="stepper"><button data-act="step" data-t="km" data-s="'+(-kmStep)+'">−</button>'+
+        '<div class="valwrap"><input id="km" class="mono" type="number" inputmode="decimal" step="0.1" value="'+km+'" min="0"><div class="unit">km</div></div>'+
+        '<button data-act="step" data-t="km" data-s="'+kmStep+'">+</button></div></div>'+
+      '<div class="field"><div class="fl">Duration</div><div class="stepper"><button data-act="step" data-t="amin" data-s="-5">−</button>'+
+        '<div class="valwrap"><input id="amin" class="mono" type="number" inputmode="numeric" value="'+min+'" min="0"><div class="unit">minutes</div></div>'+
+        '<button data-act="step" data-t="amin" data-s="5">+</button></div></div>'+
+      '<div class="mactions">'+rm+'<button class="btn-primary" data-act="save-activity" data-type="'+type+'" data-id="'+(id||'')+'">'+(existing?'Save':'Add')+'</button></div></div></div>';
+    focusInput('km');
+  }
+
+  function openName(){
+    modalEl.innerHTML='<div class="scrim" data-act="scrim"><div class="sheet" role="dialog" aria-modal="true" style="--tc:var(--italian);--tcl:var(--italian-l)">'+
+      '<div class="meyebrow">Your name</div><h2>What should I call you?</h2>'+
+      '<input id="nameval" class="tin" type="text" value="'+esc(settings.name)+'">'+
+      '<div class="mactions"><button class="btn-ghost" data-act="scrim">Cancel</button><button class="btn-primary" data-act="name-save">Save</button></div></div></div>';
+    focusInput('nameval',true);
+  }
+  function focusInput(id,sel){ setTimeout(function(){ var i=document.getElementById(id); if(i){ i.focus(); if(sel&&i.select) i.select(); } },40); }
+
+  /* ============ actions ============ */
+  function nowISO(){ var d=new Date(); function p(n){return String(n).padStart(2,'0');}
+    return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds()); }
+  function newId(){ return 'a'+Date.now().toString(36)+Math.floor(Math.random()*1e4).toString(36); }
+  function numVal(id){ var v=parseFloat(document.getElementById(id).value); return isNaN(v)?0:v; }
+
+  document.addEventListener('click', function(e){
+    var el=e.target.closest('[data-act]'); if(!el) return;
+    var act=el.getAttribute('data-act');
+
+    if(act==='view'){ state.view=el.getAttribute('data-view'); render(); return; }
+    if(act==='scrim'){ if(e.target===el || el.classList.contains('btn-ghost')) closeModal(); return; }
+    if(act==='step'){ var id=el.getAttribute('data-t'), s=parseFloat(el.getAttribute('data-s')), inp=document.getElementById(id);
+      var v=parseFloat(inp.value)||0; v+=s; if(v<0)v=0; v=Math.round(v*100)/100; inp.value=v; return; }
+
+    if(act==='open-log'){ openLog(el.getAttribute('data-track')); return; }
+    if(act==='log-save'){ var tr=el.getAttribute('data-track'), v=Math.max(0,Math.round(numVal('logmin'))), b=getBlob(TODAY_KEY);
+      b.tasks.forEach(function(t){ if(t.track===tr){ t.done=true; t.actualMin=v; if(!t.loggedAt) t.loggedAt=nowISO(); } });
+      saveDay(TODAY_KEY); closeModal(); render(); return; }
+    if(act==='log-remove'){ var tr2=el.getAttribute('data-track'), b2=getBlob(TODAY_KEY);
+      b2.tasks.forEach(function(t){ if(t.track===tr2){ t.done=false; t.actualMin=null; t.loggedAt=null; } });
+      saveDay(TODAY_KEY); closeModal(); render(); return; }
+
+    if(act==='add-activity'){ openActivity(el.getAttribute('data-type'),null); return; }
+    if(act==='edit-activity'){ openActivity(null,el.getAttribute('data-id')); return; }
+    if(act==='save-activity'){ var type=el.getAttribute('data-type'), aid=el.getAttribute('data-id')||null;
+      var km=Math.max(0,numVal('km')), min=Math.max(0,Math.round(numVal('amin'))), b3=getBlob(TODAY_KEY);
+      if(aid){ b3.activities.forEach(function(a){ if(a.id===aid){ a.km=km; a.min=min; } }); }
+      else { b3.activities.push({id:newId(),type:type,km:km,min:min,loggedAt:nowISO()}); }
+      saveDay(TODAY_KEY); closeModal(); render(); return; }
+    if(act==='del-activity'){ var did=el.getAttribute('data-id'), b4=getBlob(TODAY_KEY);
+      b4.activities=b4.activities.filter(function(a){ return a.id!==did; }); saveDay(TODAY_KEY); closeModal(); render(); return; }
+
+    if(act==='pray'){ var p=el.getAttribute('data-p'), b5=getBlob(TODAY_KEY), pr=b5.prayers[p];
+      if(pr.done){ pr.done=false; pr.loggedAt=null; } else { pr.done=true; pr.loggedAt=nowISO(); } saveDay(TODAY_KEY); render(); return; }
+    if(act==='dismiss-nudge'){ var b6=getBlob(TODAY_KEY); b6.nudgeDismissed=true; saveDay(TODAY_KEY); render(); return; }
+
+    if(act==='edit-name'){ openName(); return; }
+    if(act==='name-save'){ var nv=document.getElementById('nameval').value.trim()||'there'; settings.name=nv; apiSaveSettings(settings); closeModal(); render(); return; }
+
+    if(act==='week'){ var d1=parseInt(el.getAttribute('data-d'),10), n=state.weekOffset+d1; if(n>0)n=0; state.weekOffset=n; render(); return; }
+    if(act==='month'){ var d2=parseInt(el.getAttribute('data-d'),10), nm=state.monthOffset+d2; if(nm>0)nm=0; state.monthOffset=nm; render(); return; }
+    if(act==='compl'){ state.complWin=parseInt(el.getAttribute('data-w'),10); render(); return; }
+  });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+
+  function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+
+  /* ============ boot ============ */
+  function render(){
+    blobs={};
+    document.getElementById('app').innerHTML = state.view==='today'?renderToday():renderAnalytics();
+    document.querySelectorAll('.nav button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-view')===state.view); });
+  }
+
+  function boot(){
+    TODAY=startOfDay(new Date()); TODAY_KEY=fmt(TODAY);
+    var d=new Date(SEASON_START); ALL_KEYS=[]; while(d<=TODAY){ ALL_KEYS.push(fmt(d)); d=addDays(d,1); }
+    var from=ALL_KEYS[0], to=TODAY_KEY;
+    Promise.all([
+      apiGetDays(from,to).then(function(data){
+        // seed from this device's cache first, then overlay whatever the API returns
+        ALL_KEYS.forEach(function(k){ var v=lsGet('day:'+k); if(v) cacheRaw[k]=v; });
+        if(data){ for(var k in data){ if(data[k]) cacheRaw[k]=data[k]; } }
+        if(!backendInfo) backendInfo='local';
+      }),
+      apiGetSettings().then(function(s){ if(!s) s=lsGet('settings'); if(s&&s.name) settings.name=s.name; })
+    ]).then(render).catch(render);
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

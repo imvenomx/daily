@@ -1,0 +1,12 @@
+{
+  "name": "daily-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal daily self-improvement tracker (Aug–Dec 2026 season)",
+  "dependencies": {
+    "@vercel/blob": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
