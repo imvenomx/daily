@@ -1,10 +1,11 @@
 // GET  /api/day?date=YYYY-MM-DD        -> { data: <blob|null>, backend }
 // POST /api/day  { date, data }        -> { ok: true, backend }
 const store = require('../lib/store');
-const { readBody, query, DATE_RE } = require('../lib/http');
+const { readBody, query, DATE_RE, pinOk } = require('../lib/http');
 
 module.exports = async (req, res) => {
   try {
+    if (!pinOk(req)) return res.status(401).json({ error: 'unauthorized' });
     if (req.method === 'GET') {
       const date = query(req, 'date');
       if (!DATE_RE.test(date || '')) return res.status(400).json({ error: 'bad date' });

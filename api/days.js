@@ -3,7 +3,7 @@
 // Only days that have stored data are included. Range is capped to keep the
 // batch reasonable.
 const store = require('../lib/store');
-const { query, DATE_RE } = require('../lib/http');
+const { query, DATE_RE, pinOk } = require('../lib/http');
 
 const MAX_DAYS = 400;
 
@@ -25,6 +25,7 @@ function enumerate(from, to) {
 
 module.exports = async (req, res) => {
   try {
+    if (!pinOk(req)) return res.status(401).json({ error: 'unauthorized' });
     if (req.method !== 'GET') {
       res.setHeader('Allow', 'GET');
       return res.status(405).json({ error: 'method not allowed' });

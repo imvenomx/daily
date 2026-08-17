@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#0E1117">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
 <title>Daily · Season Tracker</title>
 <style>
   :root{
@@ -241,9 +242,27 @@
   @keyframes fade{from{opacity:0}to{opacity:1}}
   @keyframes rise{from{transform:translateY(24px)}to{transform:translateY(0)}}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* Lock screen */
+  body.locked .nav{display:none}
+  .lock{min-height:72vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .lockcard{width:100%;max-width:300px;text-align:center;background:var(--surface);border:1px solid var(--border);
+    border-radius:18px;padding:32px 24px;animation:rise .25s cubic-bezier(.2,.7,.3,1)}
+  .lockicon{font-size:28px;line-height:1}
+  .lockttl{font-family:var(--serif);font-size:24px;font-weight:500;margin-top:12px;letter-spacing:-.01em}
+  .locksub{color:var(--muted);font-size:13px;margin-top:5px}
+  .pinin{width:100%;margin-top:22px;background:var(--raised2);border:1px solid var(--border);border-radius:12px;
+    padding:14px 10px;text-align:center;font-size:24px;letter-spacing:.34em;color:var(--text);
+    font-variant-numeric:tabular-nums}
+  .pinin::placeholder{color:var(--faint);letter-spacing:.34em}
+  .pinin:focus{outline:none;border-color:var(--cardio-l)}
+  .pinerr{min-height:18px;margin-top:11px;font-family:var(--mono);font-size:12px;color:var(--gym-l)}
+  .pinbtn{width:100%;margin-top:4px;padding:14px;border-radius:12px;background:var(--cardio);color:#fff;
+    font-size:15px;font-weight:600}
+  .pinbtn:active{opacity:.85}
 </style>
 </head>
-<body>
+<body class="locked">
 <div id="app"><div class="boot">loading…</div></div>
 <nav class="nav"><div class="inner">
   <button data-act="view" data-view="today">Today</button>
@@ -286,31 +305,42 @@
   var SEASON_START = new Date(2026,7,1);
   var SEASON_END   = new Date(2026,11,31);
 
-  /* ============ storage: API + localStorage write-through ============ */
-  var backendInfo = null; // 'redis' | 'memory' | 'local'
+  /* ============ storage: PIN-gated API + localStorage write-through ============ */
+  var backendInfo = null; // 'blob' | 'memory' | 'local'
+  var PIN = null;         // access code the user entered (kept in localStorage)
   function lsGet(k){ try{ var v=localStorage.getItem('dt:'+k); return v?JSON.parse(v):null; }catch(e){ return null; } }
   function lsSet(k,v){ try{ localStorage.setItem('dt:'+k, JSON.stringify(v)); }catch(e){} }
+  function lsDel(k){ try{ localStorage.removeItem('dt:'+k); }catch(e){} }
+
+  function authFetch(url,opts){
+    opts=opts||{}; opts.headers=Object.assign({}, opts.headers||{}, {'x-pin':PIN||''});
+    return fetch(url,opts).then(function(r){ if(r.status===401){ lock('Session locked — enter your code'); throw new Error('unauthorized'); } return r; });
+  }
+  function verifyPin(code){ // resolves true=ok, false=wrong, null=couldn't reach server
+    return fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pin:code})})
+      .then(function(r){ return r.status===401?false:(r.ok?true:null); }).catch(function(){ return null; });
+  }
 
   function apiGetDays(from,to){
-    return fetch('/api/days?from='+from+'&to='+to).then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    return authFetch('/api/days?from='+from+'&to='+to).then(function(r){ if(!r.ok) throw 0; return r.json(); })
       .then(function(j){ backendInfo=j.backend||'memory'; return j.data||{}; })
       .catch(function(){ backendInfo=backendInfo||'local'; return null; });
   }
   function apiGetSettings(){
-    return fetch('/api/settings').then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    return authFetch('/api/settings').then(function(r){ if(!r.ok) throw 0; return r.json(); })
       .then(function(j){ if(j.backend) backendInfo=j.backend; return j.data; })
       .catch(function(){ return null; });
   }
   function apiSaveDay(key,val){
     lsSet('day:'+key, val);
-    fetch('/api/day',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date:key,data:val})})
+    authFetch('/api/day',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({date:key,data:val})})
       .then(function(r){ return r.ok?r.json():null; })
       .then(function(j){ if(j&&j.backend) backendInfo=j.backend; })
       .catch(function(){ backendInfo='local'; });
   }
   function apiSaveSettings(val){
     lsSet('settings', val);
-    fetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:val})}).catch(function(){});
+    authFetch('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:val})}).catch(function(){});
   }
 
   /* ============ date utils ============ */
@@ -695,6 +725,7 @@
     var el=e.target.closest('[data-act]'); if(!el) return;
     var act=el.getAttribute('data-act');
 
+    if(act==='unlock'){ tryUnlock(); return; }
     if(act==='view'){ state.view=el.getAttribute('data-view'); render(); return; }
     if(act==='scrim'){ if(e.target===el || el.classList.contains('btn-ghost')) closeModal(); return; }
     if(act==='step'){ var id=el.getAttribute('data-t'), s=parseFloat(el.getAttribute('data-s')), inp=document.getElementById(id);
@@ -729,7 +760,13 @@
     if(act==='month'){ var d2=parseInt(el.getAttribute('data-d'),10), nm=state.monthOffset+d2; if(nm>0)nm=0; state.monthOffset=nm; render(); return; }
     if(act==='compl'){ state.complWin=parseInt(el.getAttribute('data-w'),10); render(); return; }
   });
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeModal(); });
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape') closeModal();
+    if(e.key==='Enter' && document.getElementById('pinin')) tryUnlock();
+  });
+  document.addEventListener('input', function(e){
+    if(e.target && e.target.id==='pinin' && (e.target.value||'').length>=6) tryUnlock();
+  });
 
   function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 
@@ -740,9 +777,35 @@
     document.querySelectorAll('.nav button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-view')===state.view); });
   }
 
-  function boot(){
-    TODAY=startOfDay(new Date()); TODAY_KEY=fmt(TODAY);
-    var d=new Date(SEASON_START); ALL_KEYS=[]; while(d<=TODAY){ ALL_KEYS.push(fmt(d)); d=addDays(d,1); }
+  /* ============ lock screen ============ */
+  function lock(msg){ PIN=null; lsDel('pin'); document.body.classList.add('locked'); renderLock(msg||''); }
+  function renderLock(msg){
+    document.getElementById('app').innerHTML=
+      '<div class="lock"><div class="lockcard">'+
+        '<div class="lockicon">🔒</div><div class="lockttl">Daily</div>'+
+        '<div class="locksub">Enter your access code</div>'+
+        '<input id="pinin" class="pinin" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="off" maxlength="6" placeholder="••••••">'+
+        '<div class="pinerr">'+esc(msg||'')+'</div>'+
+        '<button class="pinbtn" data-act="unlock">Unlock</button>'+
+      '</div></div>';
+    setTimeout(function(){ var i=document.getElementById('pinin'); if(i) i.focus(); },60);
+  }
+  function setPinErr(m){ var e=document.querySelector('.pinerr'); if(e) e.textContent=m; }
+  function tryUnlock(){
+    var i=document.getElementById('pinin'); if(!i) return;
+    var code=(i.value||'').trim();
+    if(code.length<4){ setPinErr('Enter your code'); return; }
+    setPinErr('Checking…');
+    verifyPin(code).then(function(ok){
+      if(ok===true){ PIN=code; lsSet('pin',code); loadData(); }
+      else if(ok===false){ setPinErr('Wrong code'); i.value=''; i.focus(); }
+      else { setPinErr('Couldn’t reach server — try again'); }
+    });
+  }
+
+  /* ============ boot ============ */
+  function loadData(){
+    document.getElementById('app').innerHTML='<div class="boot">loading…</div>';
     var from=ALL_KEYS[0], to=TODAY_KEY;
     Promise.all([
       apiGetDays(from,to).then(function(data){
@@ -752,7 +815,17 @@
         if(!backendInfo) backendInfo='local';
       }),
       apiGetSettings().then(function(s){ if(!s) s=lsGet('settings'); if(s&&s.name) settings.name=s.name; })
-    ]).then(render).catch(render);
+    ]).then(finishLoad).catch(finishLoad);
+  }
+  function finishLoad(){
+    if(!PIN) return; // a 401 during load re-locked us; leave the lock screen up
+    document.body.classList.remove('locked'); render();
+  }
+  function boot(){
+    TODAY=startOfDay(new Date()); TODAY_KEY=fmt(TODAY);
+    var d=new Date(SEASON_START); ALL_KEYS=[]; while(d<=TODAY){ ALL_KEYS.push(fmt(d)); d=addDays(d,1); }
+    PIN=lsGet('pin');
+    if(PIN){ loadData(); } else { document.body.classList.add('locked'); renderLock(''); }
   }
   boot();
 })();

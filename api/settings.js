@@ -1,10 +1,11 @@
 // GET  /api/settings          -> { data: <settings|null>, backend }
 // POST /api/settings { data } -> { ok: true, backend }
 const store = require('../lib/store');
-const { readBody } = require('../lib/http');
+const { readBody, pinOk } = require('../lib/http');
 
 module.exports = async (req, res) => {
   try {
+    if (!pinOk(req)) return res.status(401).json({ error: 'unauthorized' });
     if (req.method === 'GET') {
       const data = await store.get('settings');
       return res.status(200).json({ data: data || null, backend: store.backend() });

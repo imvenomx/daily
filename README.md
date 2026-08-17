@@ -28,6 +28,25 @@ The frontend also **writes through to `localStorage`**, so the app works immedia
 
 > Note: the data document is stored with public-read access, so its (unguessable, random-subdomain) URL is technically reachable by anyone who has it. For a personal habit tracker that's normally fine; if you'd rather it not be public at all, tell me and I'll switch to per-request private downloads.
 
+## Access code (PIN)
+
+The app opens to a lock screen and every API request must carry the correct code —
+the server rejects wrong/missing codes with `401`, so the data isn't reachable through
+the app without it. The code is read from the **`APP_PIN`** environment variable and
+defaults to **`200467`** if unset. Once entered, it's remembered on the device.
+
+**If this repository is public**, the default `200467` is visible in the committed
+source (`lib/http.js`). To keep a real secret, do one of:
+
+- **Make the repo private** (recommended for personal use), or
+- Set `APP_PIN` to a different value in **Vercel → Project → Settings → Environment
+  Variables**, then redeploy. The env value overrides the default.
+
+## Search engines
+
+The app asks not to be indexed via a `noindex` `<meta>` tag, an `X-Robots-Tag`
+response header (`vercel.json`), and `robots.txt` (`Disallow: /`).
+
 ## Local development
 
 ```bash
