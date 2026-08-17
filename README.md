@@ -6,7 +6,18 @@ A mobile-first, single-user tracker for a 6-track self-improvement season (Aug�
 - **Sessions** are auto-generated each day from a fixed weekly schedule (Gym / CJCA / Italian, plus optional Chinese). Check one off and log the actual minutes.
 - **Cardio** is ad-hoc: tap `+ Run`, `+ Ride`, or `+ Swim` any time to log distance (km) + duration. Multiple per day, editable and deletable.
 - **Prayers**: five one-tap toggles with a recorded timestamp.
+- **Custom tasks**: add your own recurring tasks (name, optional minutes, which weekdays) via **+ Add task** — they show alongside the built-ins. Minutes = 0 makes it a plain checkbox.
+- **Wishlist**: a separate tab for things you want to buy (name, price in MAD, note) with a running total. Tap **Select** to multi-pick items and **Remove** them.
 - **Analytics**: weekly hours logged vs. planned, cardio distance/time, per-track streaks (current + longest, with broken-streak notes), 7/30-day completion, season totals against targets (Italian ~350h, Chinese ~140h, CJCA ~10h/wk), and a monthly prayer heatmap.
+
+## The streak fire 🔥
+
+One global daily streak, shown at the top of Today. Rules live in **Settings** (⚙):
+
+- Per task, choose **Daily** (needed each day it’s planned), **Weekly ×N** (a goal that shows progress but *never breaks the fire* — e.g. gym 4×/week), or **Off**.
+- A day keeps the fire if every **Daily** task planned that day is done. Weekly tasks appear under **Weekly goals** on Today.
+- **Freezes** ❄️: you earn 1 every 7-day streak (4 weeks → 4 freezes). If a missed day breaks the streak, a **Restore streak** button spends freezes to bridge the gap and bring the fire back.
+- Defaults: CJCA / Italian / Prayer = Daily, Gym = 4×/week, Cardio = 3×/week, Chinese = Off. Change any of them in Settings.
 
 ## Stack
 

@@ -244,6 +244,80 @@
   @keyframes rise{from{transform:translateY(24px)}to{transform:translateY(0)}}
   .field .tin{margin:8px 0 0}
 
+  /* Header with gear */
+  .ghead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .gear{font-size:17px;color:var(--muted);padding:6px 9px;border:1px solid var(--border);border-radius:10px;
+    background:var(--surface);line-height:1;flex:0 0 auto}
+  .gear:active{background:var(--raised)}
+
+  /* Streak banner */
+  .streakwrap{margin:16px 0 2px}
+  .streakbar{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);
+    border-radius:16px;padding:14px 16px;border-top:2px solid var(--gym)}
+  .stfire{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+  .stflame{font-size:26px;line-height:1}
+  .stfire.flame-off{filter:grayscale(1);opacity:.55}
+  .stnum{font-size:30px;font-weight:700;color:var(--text);letter-spacing:-.02em}
+  .stmid{flex:1;min-width:0}
+  .stlabel{font-size:13px;font-weight:600;color:var(--text)}
+  .stsub{font-size:11px;color:var(--muted);margin-top:2px}
+  .stfreeze{display:flex;flex-direction:column;align-items:center;flex:0 0 auto;line-height:1.15}
+  .stfreeze .stflk{font-size:15px}
+  .stfreeze .mono{font-size:15px;color:var(--cardio-l);font-weight:600}
+  .stfreeze .stfl{font-size:9.5px;color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
+  .strestore{width:100%;margin-top:8px;padding:12px;border-radius:12px;background:var(--cardio);color:#fff;
+    font-weight:600;font-size:14px}
+  .strestore:active{opacity:.85}
+
+  /* Weekly goals */
+  .wggrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .wgchip{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 12px}
+  .wgtop{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+  .wgl{font-size:13px;font-weight:600}
+  .wgv{font-size:12px;color:var(--muted)}
+  .wgv.met{color:var(--cjca-l)}
+  .wgbar{height:7px;background:var(--raised);border-radius:20px;overflow:hidden}
+  .wgfill{height:100%;border-radius:20px}
+  .miniadd{font-family:var(--sans);font-size:12px;font-weight:600;color:var(--wl-l);
+    border:1px solid var(--border);border-radius:20px;padding:3px 10px;letter-spacing:0;text-transform:none}
+
+  /* Settings */
+  .setrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .setname{font-size:16px;font-weight:500}
+  .setbtn{flex:0 0 auto;padding:9px 14px;font-size:13px;font-weight:600;border-radius:10px}
+  .srule{padding:11px 0;border-bottom:1px solid var(--line)}
+  .srule:last-child{border-bottom:none}
+  .srtop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .srl{font-size:13.5px;font-weight:600;color:var(--rc)}
+  .rmodes{display:flex;gap:5px;flex:0 0 auto}
+  .rmode{padding:6px 11px;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--muted);background:var(--raised)}
+  .rmode.on{background:var(--raised2);color:var(--text);border-color:var(--rc)}
+  .rweek{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:9px}
+  .rwbtn{width:30px;height:30px;border:1px solid var(--border);border-radius:8px;background:var(--raised2);
+    color:var(--text);font-size:18px;display:grid;place-items:center}
+  .rweek .mono{font-size:13px;color:var(--muted);min-width:78px;text-align:center}
+  .ctrow{display:flex;align-items:center;gap:10px;border-left:3px solid var(--rc);background:var(--raised);
+    border-radius:10px;padding:11px 12px;margin-bottom:8px}
+  .ctbody{flex:1;text-align:left;min-width:0}
+  .ctname{font-size:14.5px;font-weight:500}
+  .ctmeta{font-size:11px;color:var(--faint);margin-top:3px}
+  .ctdel{flex:0 0 auto;color:var(--gym-l);font-size:12.5px;font-weight:600;border:1px solid var(--border);
+    border-radius:8px;padding:7px 11px}
+  .daychips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+  .daychip{min-width:38px;padding:9px 10px;border:1px solid var(--border);border-radius:9px;background:var(--raised2);
+    color:var(--muted);font-size:13px;font-family:var(--mono)}
+  .daychip.on{background:var(--wl);color:#0E1117;border-color:var(--wl-l);font-weight:700}
+
+  /* Wishlist select mode */
+  .wlselbtn{font-size:13px;font-weight:600;color:var(--wl-l);border:1px solid var(--border);
+    border-radius:20px;padding:6px 14px;flex:0 0 auto}
+  .wlselcard{width:100%;text-align:left}
+  .wlselcard.sel{border-color:var(--wl-l);background:var(--raised2)}
+  .wlselbar{position:sticky;bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--raised2);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-top:14px}
+  .wldone{background:var(--gym);color:#fff;font-weight:600;font-size:14px;padding:11px 18px;border-radius:11px}
+  .wldone.off{opacity:.4}
+
   /* Wishlist */
   .wladd{width:100%;padding:14px;border-radius:12px;border:1px dashed var(--wl);color:var(--wl-l);
     background:transparent;font-weight:600;font-size:14px;margin-bottom:14px}
@@ -329,6 +403,18 @@
   var TARGETS = {italian:350, chinese:140, cjca:210}; // season-total hours
   var SEASON_START = new Date(2026,7,1);
   var SEASON_END   = new Date(2026,11,31);
+  // color palette assigned to custom tasks, round-robin
+  var CUSTOM_PAL=[{hx:'#6E7AD6',lx:'#9AA3E6'},{hx:'#3FA3A3',lx:'#6FD0D0'},{hx:'#C56BB0',lx:'#E39ACF'},{hx:'#7FA23F',lx:'#AEC96F'},{hx:'#C9803F',lx:'#E6B176'}];
+  // order of built-in streak-eligible items in Settings
+  var STREAK_ORDER=['cjca','gym','italian','chinese','cardio','prayer'];
+  function defaultRule(key){
+    if(key==='cjca'||key==='italian'||key==='prayer') return {mode:'daily',perWeek:4};
+    if(key==='gym') return {mode:'weekly',perWeek:4};
+    if(key==='cardio') return {mode:'weekly',perWeek:3};
+    if(key==='chinese') return {mode:'off',perWeek:4};
+    return {mode:'daily',perWeek:4}; // custom tasks default to daily
+  }
+  function ruleFor(key){ var r=(settings.streakRules||{})[key]; return (r&&r.mode)?{mode:r.mode,perWeek:r.perWeek||4}:defaultRule(key); }
 
   /* ============ storage: PIN-gated API + localStorage write-through ============ */
   var backendInfo = null; // 'blob' | 'memory' | 'local'
@@ -393,21 +479,36 @@
 
   /* ============ data model ============ */
   var cacheRaw={}, blobs={}, ALL_KEYS=[];
-  var settings={name:'Anwar', wishlist:[]};
+  var settings={name:'Anwar', wishlist:[], customTasks:[], streakRules:{}, freezesUsed:{}};
+  var tmpDays=[]; // custom-task day selection while its modal is open
 
+  function customScheduledOn(c,d){
+    if(c.since && fmt(d)<c.since) return false;
+    var days=c.days;
+    if(!days || !days.length) return true; // every day
+    return days.indexOf(d.getDay())>=0;
+  }
   function templateFor(key){
     var d=parseKey(key);
     var list=(SCHED[d.getDay()]||[]).slice().sort(function(a,b){return ORDER.indexOf(a[0])-ORDER.indexOf(b[0]);});
     var tasks=list.map(function(t){ return {id:t[0],track:t[0],name:t[1],plannedMin:t[2],optional:!!t[3],done:false,actualMin:null,loggedAt:null}; });
+    (settings.customTasks||[]).forEach(function(c){
+      if(customScheduledOn(c,d)) tasks.push({id:c.id,track:'custom',custom:true,label:c.name,name:c.name,
+        hx:c.hx||CUSTOM_PAL[0].hx,lx:c.lx||CUSTOM_PAL[0].lx,plannedMin:c.plannedMin||0,optional:!!c.optional,
+        done:false,actualMin:null,loggedAt:null});
+    });
     var pr={}; PRAYERS.forEach(function(p){ pr[p]={done:false,loggedAt:null}; });
     return {tasks:tasks,prayers:pr,activities:[],nudgeDismissed:false};
   }
+  function taskMeta(task){ return task.custom?{label:task.label||task.name,hx:task.hx||'#6E7AD6',lx:task.lx||'#9AA3E6'}:{label:TRACKS[task.track].label,hx:TRACKS[task.track].hx,lx:TRACKS[task.track].lx}; }
+  function taskById(key,id){ var b=getBlob(key); for(var i=0;i<b.tasks.length;i++) if(b.tasks[i].id===id) return b.tasks[i]; return null; }
+  function taskDoneId(key,id){ var t=taskById(key,id); return t?t.done:false; }
   function getBlob(key){
     if(blobs[key]) return blobs[key];
     var t=templateFor(key), raw=cacheRaw[key];
     if(raw){
       var byId={}; (raw.tasks||[]).forEach(function(x){ byId[x.id||x.track]=x; });
-      t.tasks.forEach(function(task){ var s=byId[task.track]; if(s){ task.done=!!s.done; task.actualMin=(s.actualMin!=null?s.actualMin:null); task.loggedAt=s.loggedAt||null; } });
+      t.tasks.forEach(function(task){ var s=byId[task.id]; if(s){ task.done=!!s.done; task.actualMin=(s.actualMin!=null?s.actualMin:null); task.loggedAt=s.loggedAt||null; } });
       if(raw.prayers){ PRAYERS.forEach(function(p){ if(raw.prayers[p]) t.prayers[p]={done:!!raw.prayers[p].done,loggedAt:raw.prayers[p].loggedAt||null}; }); }
       if(Array.isArray(raw.activities)){ t.activities=raw.activities.map(function(a){ return {id:a.id,type:a.type,km:+a.km||0,min:+a.min||0,loggedAt:a.loggedAt||null}; }); }
       t.nudgeDismissed=!!raw.nudgeDismissed;
@@ -448,6 +549,55 @@
     return statsFromHistory(out);
   }
 
+  /* ---- global streak engine ---- */
+  function streakItems(){
+    var out=[];
+    ['cjca','gym','italian','chinese'].forEach(function(t){
+      out.push({key:t,label:TRACKS[t].label,hx:TRACKS[t].hx,lx:TRACKS[t].lx,
+        scheduledOn:function(d){return scheduledHas(d,t);}, doneOn:function(k){return taskDone(k,t);}});
+    });
+    out.push({key:'cardio',label:'Cardio',hx:TRACKS.cardio.hx,lx:TRACKS.cardio.lx,
+      scheduledOn:function(){return true;}, doneOn:function(k){return activitiesFor(k).length>0;}});
+    out.push({key:'prayer',label:'Prayer',hx:TRACKS.prayer.hx,lx:TRACKS.prayer.lx,
+      scheduledOn:function(){return true;}, doneOn:function(k){return prayerDoneCount(k)===5;}});
+    (settings.customTasks||[]).forEach(function(c){
+      out.push({key:c.id,label:c.name,hx:c.hx||'#6E7AD6',lx:c.lx||'#9AA3E6',
+        scheduledOn:function(d){return customScheduledOn(c,d);}, doneOn:function(k){return taskDoneId(k,c.id);}});
+    });
+    return out;
+  }
+  // A day keeps the fire if every 'daily' task scheduled that day is done.
+  function dayQualifies(d){
+    var key=fmt(d), items=streakItems();
+    for(var i=0;i<items.length;i++){ var it=items[i]; if(ruleFor(it.key).mode!=='daily') continue; if(!it.scheduledOn(d)) continue; if(!it.doneOn(key)) return false; }
+    return true;
+  }
+  // Simulate the whole season: streak, freezes earned (every 7 fire-days), and
+  // whether a spent freeze can bridge a recent gap. Frozen days keep the streak
+  // but never earn new freezes (no farming).
+  function computeStreak(){
+    var used=settings.freezesUsed||{}, arr=[], d=new Date(SEASON_START);
+    while(d<=TODAY){ arr.push({key:fmt(d),q:dayQualifies(d),isToday:dayDiff(d,TODAY)===0}); d=addDays(d,1); }
+    var end=arr.length, todayPending=false, todayQ=false;
+    if(arr.length && arr[arr.length-1].isToday){ todayQ=arr[arr.length-1].q; if(!todayQ){ todayPending=true; end=arr.length-1; } }
+    var streak=0, earned=0, i;
+    for(i=0;i<end;i++){ var a=arr[i]; if(a.q){ streak++; if(streak%7===0) earned++; } else if(used[a.key]){ streak++; } else streak=0; }
+    var usedCount=Object.keys(used).length, available=Math.max(0,earned-usedCount);
+    // gap that currently breaks momentum (past days only)
+    i=end-1; while(i>=0 && (arr[i].q||used[arr[i].key])) i--;
+    var gap=[]; while(i>=0 && !(arr[i].q||used[arr[i].key])){ gap.push(arr[i].key); i--; }
+    var worth=i>=0; var gapDays=worth?gap:[]; var restoreCost=gapDays.length;
+    return {streak:streak,earned:earned,available:available,todayPending:todayPending,todayQ:todayQ,
+      gapDays:gapDays,restoreCost:restoreCost,canRestore:(restoreCost>0&&available>=restoreCost),broken:(streak===0&&!todayPending)};
+  }
+  function weeklyGoals(){
+    var mon=weekMonday(0), out=[];
+    streakItems().forEach(function(it){ if(ruleFor(it.key).mode!=='weekly') return;
+      var done=0; for(var i=0;i<7;i++){ var d=addDays(mon,i); if(d>TODAY) break; if(d<SEASON_START) continue; if(it.doneOn(fmt(d))) done++; }
+      out.push({key:it.key,label:it.label,hx:it.hx,lx:it.lx,done:done,target:ruleFor(it.key).perWeek}); });
+    return out;
+  }
+
   function weekMonday(offset){ var dow=(TODAY.getDay()+6)%7; return addDays(TODAY,-dow+offset*7); }
   function weekAgg(offset){
     var mon=weekMonday(offset), res={}, totP=0,totL=0,elapsedP=0,elapsedL=0;
@@ -457,6 +607,7 @@
       var d=addDays(mon,i); if(d<SEASON_START) continue;
       var past=dayDiff(d,TODAY)<=0, b=getBlob(fmt(d));
       b.tasks.forEach(function(task){
+        if(!res[task.track]) return; // custom tasks aren't part of the core-hours chart
         res[task.track].plan+=task.plannedMin; if(!task.optional){ totP+=task.plannedMin; if(past) elapsedP+=task.plannedMin; }
         if(task.done && task.actualMin!=null){ res[task.track].log+=task.actualMin; if(!task.optional){ totL+=task.actualMin; if(past) elapsedL+=task.actualMin; } }
       });
@@ -484,42 +635,42 @@
   }
 
   /* ============ state ============ */
-  var state={view:'today', weekOffset:0, monthOffset:0, complWin:7};
+  var state={view:'today', weekOffset:0, monthOffset:0, complWin:7, wlSelect:false, wlSel:{}};
 
   /* ============ render: today ============ */
   function greetingWord(h){ if(h>=5&&h<12) return 'Good morning'; if(h>=12&&h<18) return 'Good afternoon'; return 'Good evening'; }
 
   function pillHTML(track){
-    var T=TRACKS[track], vars='--pc:'+T.hx+';--pcl:'+T.lx, st, streak, note='';
+    var T=TRACKS[track], vars='--pc:'+T.hx+';--pcl:'+T.lx, st, info;
     if(track==='prayer'){
-      var n=prayerDoneCount(TODAY_KEY); st=n===0?'empty':(n===5?'done':'partial');
-      var ps=prayerStats(); streak=ps.current; if(ps.broken&&ps.lost>0) note='<span class="broke">✕'+ps.lost+'</span>';
+      var n=prayerDoneCount(TODAY_KEY); st=n===0?'empty':(n===5?'done':'partial'); info=n+'/5';
     } else if(track==='cardio'){
-      var acts=activitiesFor(TODAY_KEY); st=acts.length?'done':'empty';
-      var cs=cardioStats(); streak=cs.current;
+      var acts=activitiesFor(TODAY_KEY); st=acts.length?'done':'empty'; info=acts.length?acts.length+'×':'—';
     } else {
       var sched=scheduledHas(TODAY,track);
       st = !sched ? 'rest' : (taskDone(TODAY_KEY,track)?'done':'empty');
-      var s=trackStats(track); streak=s.current; if(s.broken&&s.lost>0) note='<span class="broke">✕'+s.lost+'</span>';
+      info = !sched?'rest':(taskDone(TODAY_KEY,track)?'done':'to-do');
     }
-    var zero=streak>0?'':' zero', txt=streak>0?'🔥'+streak:'·0';
+    var dim=(st==='done')?'':' zero';
     return '<div class="pill" style="'+vars+'"><div class="ptop"><span class="plabel">'+T.label+'</span>'+
-      '<span class="dot '+st+'"></span></div><div class="pstreak'+zero+'">'+txt+note+'</div></div>';
+      '<span class="dot '+st+'"></span></div><div class="pstreak'+dim+'">'+info+'</div></div>';
   }
 
   function taskCardHTML(task){
-    var T=TRACKS[task.track], vars='--tc:'+T.hx+';--tcl:'+T.lx, meta='';
+    var M=taskMeta(task), vars='--tc:'+M.hx+';--tcl:'+M.lx, meta='';
+    var timed = task.custom ? (task.plannedMin>0) : true;
     if(task.done){
       var tm=task.loggedAt?new Date(task.loggedAt):null;
       var tmS=tm?String(tm.getHours()).padStart(2,'0')+':'+String(tm.getMinutes()).padStart(2,'0'):'--:--';
-      meta='<div class="meta"><span class="logged">'+fmtDur(task.actualMin!=null?task.actualMin:task.plannedMin)+' logged</span><span>at '+tmS+'</span></div>';
+      meta='<div class="meta"><span class="logged">'+(timed?fmtDur(task.actualMin!=null?task.actualMin:task.plannedMin)+' logged':'done')+'</span><span>at '+tmS+'</span></div>';
     }
-    var optTag=task.optional?'<span class="opt">optional</span>':'';
+    var tag=task.optional?'<span class="opt">optional</span>':(task.custom?'<span class="opt">custom</span>':'');
+    var planHTML=timed?'<span class="plan">~'+fmtDur(task.plannedMin)+'</span>':'';
     return '<div class="card'+(task.done?' done':'')+'" style="'+vars+'">'+
-      '<button class="taprow" data-act="open-log" data-track="'+task.track+'">'+
+      '<button class="taprow" data-act="open-log" data-id="'+task.id+'">'+
         '<span class="toggle'+(task.done?' on':'')+'"><svg class="ck" viewBox="0 0 18 18"><path d="M3 9l4 4 8-9"/></svg></span>'+
-        '<span class="body"><span class="eyebrow">'+T.label+optTag+'</span><div class="nm">'+task.name+'</div>'+meta+'</span>'+
-      '</button><span class="plan">~'+fmtDur(task.plannedMin)+'</span></div>';
+        '<span class="body"><span class="eyebrow">'+esc(M.label)+tag+'</span><div class="nm">'+esc(task.name)+'</div>'+meta+'</span>'+
+      '</button>'+planHTML+'</div>';
   }
 
   function activityCardHTML(a){
@@ -547,11 +698,30 @@
   function nudgeHTML(total,done){
     var b=getBlob(TODAY_KEY);
     if((new Date()).getHours()<18 || b.nudgeDismissed || done>=total/2) return '';
-    var out=[]; b.tasks.forEach(function(t){ if(!t.optional && !t.done) out.push(TRACKS[t.track].label); });
+    var out=[]; b.tasks.forEach(function(t){ if(!t.optional && !t.done) out.push(taskMeta(t).label); });
     var pc=prayerDoneCount(TODAY_KEY); if(pc<5) out.push('Prayer '+pc+'/5');
     if(!out.length) return '';
     return '<div class="nudge"><div class="txt">It’s past 6pm and today is only <b>'+done+' of '+total+'</b> done. Still open: <b>'+out.join(', ')+'</b>.</div>'+
       '<button class="x" data-act="dismiss-nudge" aria-label="Dismiss">×</button></div>';
+  }
+
+  function streakBannerHTML(){
+    var s=computeStreak();
+    var sub = s.todayPending ? 'today not logged yet' : (s.todayQ ? 'today counts ✓' : (s.broken ? 'streak broken' : ''));
+    var restore = s.canRestore ? '<button class="strestore" data-act="use-freeze">Restore streak · use '+s.restoreCost+' ❄️</button>' : '';
+    var flame = s.streak>0 ? 'flame-on' : 'flame-off';
+    return '<div class="streakwrap"><div class="streakbar">'+
+        '<div class="stfire '+flame+'"><span class="stflame">🔥</span><span class="stnum mono">'+s.streak+'</span></div>'+
+        '<div class="stmid"><div class="stlabel">day streak</div><div class="stsub mono">'+sub+'</div></div>'+
+        '<div class="stfreeze"><span class="stflk">❄️</span><span class="mono">'+s.available+'</span><span class="stfl">freezes</span></div>'+
+      '</div>'+restore+'</div>';
+  }
+  function weeklyGoalsHTML(){
+    var g=weeklyGoals(); if(!g.length) return '';
+    var chips=g.map(function(x){ var pct=x.target?Math.min(100,x.done/x.target*100):0; var met=x.done>=x.target;
+      return '<div class="wgchip"><div class="wgtop"><span class="wgl">'+esc(x.label)+'</span><span class="wgv mono'+(met?' met':'')+'">'+x.done+'/'+x.target+'</span></div>'+
+        '<div class="wgbar"><div class="wgfill" style="width:'+pct+'%;background:'+x.hx+'"></div></div></div>'; }).join('');
+    return '<div class="shead">Weekly goals</div><div class="wggrid">'+chips+'</div>';
   }
 
   function renderToday(){
@@ -570,14 +740,17 @@
         '<span class="ico">'+M.ico+'</span><span class="lb">+ '+M.label+'</span></button>'; }).join('');
 
     return ''+
-    '<div class="greet"><h1>'+greetingWord(now.getHours())+', <span class="name" style="color:var(--italian-l)">'+esc(settings.name)+'</span>'+
+    '<div class="greet"><div class="ghead"><h1>'+greetingWord(now.getHours())+', <span class="name" style="color:var(--italian-l)">'+esc(settings.name)+'</span>'+
       '<button class="edit" data-act="edit-name">edit</button></h1>'+
+      '<button class="gear" data-act="open-settings" aria-label="Settings">⚙</button></div>'+
       '<div class="date">'+DOWL[TODAY.getDay()]+' · '+MON[TODAY.getMonth()]+' '+TODAY.getDate()+', '+TODAY.getFullYear()+'</div></div>'+
+    streakBannerHTML()+
     '<div class="pills">'+pills+'</div>'+
     '<div class="prog"><div class="track"><div class="fill" style="width:'+pct+'%"></div></div>'+
       '<div class="lbl"><span>Today</span><span><b>'+done+'</b> / '+total+' core done</span></div></div>'+
     nudgeHTML(total,done)+
-    '<div class="shead">Sessions</div>'+cards+
+    weeklyGoalsHTML()+
+    '<div class="shead">Sessions <button class="miniadd" data-act="add-task">+ Add task</button></div>'+cards+
     '<div class="shead">Cardio <span class="c">'+acts.length+' today</span></div>'+
       '<div class="actbtns">'+actbtns+'</div>'+actList+
     '<div class="shead">Prayers <span class="c">'+prayerDoneCount(TODAY_KEY)+' / 5</span></div>'+prayerHTML();
@@ -695,20 +868,27 @@
   var modalEl=document.getElementById('modal');
   function closeModal(){ modalEl.innerHTML=''; }
 
-  function openLog(track){
-    var b=getBlob(TODAY_KEY), task=null;
-    for(var i=0;i<b.tasks.length;i++) if(b.tasks[i].track===track) task=b.tasks[i];
-    if(!task) return;
-    var T=TRACKS[track], vars='--tc:'+T.hx+';--tcl:'+T.lx;
-    var val=task.done&&task.actualMin!=null?task.actualMin:task.plannedMin;
-    var rm=task.done?'<button class="btn-danger" data-act="log-remove" data-track="'+track+'">Uncheck</button>':'';
+  function openTask(id){
+    var task=taskById(TODAY_KEY,id); if(!task) return;
+    var timed = task.custom ? (task.plannedMin>0) : true;
+    if(!timed){ // simple check task — toggle without a modal
+      if(task.done){ task.done=false; task.loggedAt=null; } else { task.done=true; task.loggedAt=nowISO(); }
+      saveDay(TODAY_KEY); render(); return;
+    }
+    openLog(id);
+  }
+  function openLog(id){
+    var task=taskById(TODAY_KEY,id); if(!task) return;
+    var M=taskMeta(task), vars='--tc:'+M.hx+';--tcl:'+M.lx;
+    var val=task.done&&task.actualMin!=null?task.actualMin:(task.plannedMin||30);
+    var rm=task.done?'<button class="btn-danger" data-act="log-remove" data-id="'+id+'">Uncheck</button>':'';
     modalEl.innerHTML='<div class="scrim" data-act="scrim"><div class="sheet" style="'+vars+'" role="dialog" aria-modal="true">'+
-      '<div class="meyebrow">'+T.label+(task.optional?' · optional':'')+'</div><h2>'+task.name+'</h2>'+
-      '<div class="mplan">Planned ~'+fmtDur(task.plannedMin)+' · how long did it take?</div>'+
+      '<div class="meyebrow">'+esc(M.label)+(task.optional?' · optional':'')+'</div><h2>'+esc(task.name)+'</h2>'+
+      '<div class="mplan">'+(task.plannedMin>0?'Planned ~'+fmtDur(task.plannedMin)+' · ':'')+'how long did it take?</div>'+
       '<div class="field"><div class="stepper"><button data-act="step" data-t="logmin" data-s="-5" aria-label="less">−</button>'+
         '<div class="valwrap"><input id="logmin" class="mono" type="number" inputmode="numeric" value="'+val+'" min="0"><div class="unit">minutes</div></div>'+
         '<button data-act="step" data-t="logmin" data-s="5" aria-label="more">+</button></div></div>'+
-      '<div class="mactions">'+rm+'<button class="btn-primary" data-act="log-save" data-track="'+track+'">'+(task.done?'Save':'Log & check')+'</button></div></div></div>';
+      '<div class="mactions">'+rm+'<button class="btn-primary" data-act="log-save" data-id="'+id+'">'+(task.done?'Save':'Log & check')+'</button></div></div></div>';
     focusInput('logmin');
   }
 
@@ -757,13 +937,35 @@
     if(act==='step'){ var id=el.getAttribute('data-t'), s=parseFloat(el.getAttribute('data-s')), inp=document.getElementById(id);
       var v=parseFloat(inp.value)||0; v+=s; if(v<0)v=0; v=Math.round(v*100)/100; inp.value=v; return; }
 
-    if(act==='open-log'){ openLog(el.getAttribute('data-track')); return; }
-    if(act==='log-save'){ var tr=el.getAttribute('data-track'), v=Math.max(0,Math.round(numVal('logmin'))), b=getBlob(TODAY_KEY);
-      b.tasks.forEach(function(t){ if(t.track===tr){ t.done=true; t.actualMin=v; if(!t.loggedAt) t.loggedAt=nowISO(); } });
-      saveDay(TODAY_KEY); closeModal(); render(); return; }
-    if(act==='log-remove'){ var tr2=el.getAttribute('data-track'), b2=getBlob(TODAY_KEY);
-      b2.tasks.forEach(function(t){ if(t.track===tr2){ t.done=false; t.actualMin=null; t.loggedAt=null; } });
-      saveDay(TODAY_KEY); closeModal(); render(); return; }
+    if(act==='open-log'){ openTask(el.getAttribute('data-id')); return; }
+    if(act==='log-save'){ var lid=el.getAttribute('data-id'), v=Math.max(0,Math.round(numVal('logmin'))), t=taskById(TODAY_KEY,lid);
+      if(t){ t.done=true; t.actualMin=v; if(!t.loggedAt) t.loggedAt=nowISO(); } saveDay(TODAY_KEY); closeModal(); render(); return; }
+    if(act==='log-remove'){ var rid=el.getAttribute('data-id'), t2=taskById(TODAY_KEY,rid);
+      if(t2){ t2.done=false; t2.actualMin=null; t2.loggedAt=null; } saveDay(TODAY_KEY); closeModal(); render(); return; }
+
+    if(act==='open-settings'){ state.view='settings'; render(); return; }
+    if(act==='use-freeze'){ var s=computeStreak(); if(s.canRestore){ if(!settings.freezesUsed) settings.freezesUsed={}; s.gapDays.forEach(function(k){ settings.freezesUsed[k]=true; }); apiSaveSettings(settings); render(); } return; }
+    if(act==='rule-mode'){ var rk=el.getAttribute('data-key'), rm=el.getAttribute('data-mode'); if(!settings.streakRules) settings.streakRules={};
+      var cur=ruleFor(rk); settings.streakRules[rk]={mode:rm,perWeek:cur.perWeek||4}; apiSaveSettings(settings); render(); return; }
+    if(act==='rule-week'){ var wk=el.getAttribute('data-key'), wd=parseInt(el.getAttribute('data-d'),10); if(!settings.streakRules) settings.streakRules={};
+      var c2=ruleFor(wk); var n=Math.max(1,Math.min(7,(c2.perWeek||4)+wd)); settings.streakRules[wk]={mode:'weekly',perWeek:n}; apiSaveSettings(settings); render(); return; }
+
+    if(act==='add-task'){ openCustom(null); return; }
+    if(act==='edit-task'){ openCustom(el.getAttribute('data-id')); return; }
+    if(act==='cust-day'){ var cd=parseInt(el.getAttribute('data-d'),10);
+      if(cd===-1){ tmpDays=[]; document.querySelectorAll('.daychip').forEach(function(x){ x.classList.toggle('on', x.getAttribute('data-d')==='-1'); }); return; }
+      var ix=tmpDays.indexOf(cd); if(ix>=0) tmpDays.splice(ix,1); else tmpDays.push(cd);
+      el.classList.toggle('on'); var ed=document.querySelector('.daychip[data-d="-1"]'); if(ed) ed.classList.toggle('on', tmpDays.length===0); return; }
+    if(act==='custom-save'){ var cid=el.getAttribute('data-id')||null;
+      var nm=(document.getElementById('ctname').value||'').trim()||'Untitled';
+      var mn=parseInt(document.getElementById('ctmin').value,10); if(isNaN(mn)||mn<0)mn=0;
+      var days=tmpDays.slice().sort();
+      if(!Array.isArray(settings.customTasks)) settings.customTasks=[];
+      if(cid){ settings.customTasks.forEach(function(x){ if(x.id===cid){ x.name=nm; x.plannedMin=mn; x.days=days; } }); }
+      else { var pal=CUSTOM_PAL[settings.customTasks.length%CUSTOM_PAL.length]; settings.customTasks.push({id:'c'+newId(),name:nm,plannedMin:mn,days:days,hx:pal.hx,lx:pal.lx,since:TODAY_KEY}); }
+      apiSaveSettings(settings); closeModal(); render(); return; }
+    if(act==='del-task'){ var did=el.getAttribute('data-id'); settings.customTasks=(settings.customTasks||[]).filter(function(x){ return x.id!==did; });
+      if(settings.streakRules) delete settings.streakRules[did]; apiSaveSettings(settings); closeModal(); render(); return; }
 
     if(act==='add-activity'){ openActivity(el.getAttribute('data-type'),null); return; }
     if(act==='edit-activity'){ openActivity(null,el.getAttribute('data-id')); return; }
@@ -781,6 +983,12 @@
 
     if(act==='wl-add'){ openWish(null); return; }
     if(act==='wl-edit'){ openWish(el.getAttribute('data-id')); return; }
+    if(act==='wl-select'){ state.wlSelect=true; state.wlSel={}; render(); return; }
+    if(act==='wl-cancel'){ state.wlSelect=false; state.wlSel={}; render(); return; }
+    if(act==='wl-sel'){ var sid=el.getAttribute('data-id'); if(state.wlSel[sid]) delete state.wlSel[sid]; else state.wlSel[sid]=true; render(); return; }
+    if(act==='wl-doneit'){ var ids=state.wlSel; if(!Object.keys(ids).length) return;
+      settings.wishlist=(settings.wishlist||[]).filter(function(x){ return !ids[x.id]; });
+      state.wlSelect=false; state.wlSel={}; apiSaveSettings(settings); render(); return; }
     if(act==='wl-save'){
       var wid=el.getAttribute('data-id')||null;
       var nm=(document.getElementById('wlname').value||'').trim()||'Untitled';
@@ -815,13 +1023,18 @@
   function render(){
     blobs={};
     var v=state.view;
-    document.getElementById('app').innerHTML = v==='today'?renderToday():(v==='wishlist'?renderWishlist():renderAnalytics());
+    document.getElementById('app').innerHTML = v==='today'?renderToday():(v==='wishlist'?renderWishlist():(v==='settings'?renderSettings():renderAnalytics()));
     document.querySelectorAll('.nav button').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-view')===state.view); });
   }
 
   /* ============ render: wishlist ============ */
-  function wishCardHTML(it){
+  function wishCardHTML(it,selMode){
     var note=it.note?'<div class="wlnote">'+esc(it.note)+'</div>':'';
+    if(selMode){ var on=!!state.wlSel[it.id];
+      return '<button class="wlcard wlselcard'+(on?' sel':'')+'" style="--tc:var(--wl);--tcl:var(--wl-l)" data-act="wl-sel" data-id="'+it.id+'">'+
+        '<span class="toggle'+(on?' on':'')+'"><svg class="ck" viewBox="0 0 18 18"><path d="M3 9l4 4 8-9"/></svg></span>'+
+        '<span class="wlbody"><div class="wlnm">'+esc(it.name)+'</div>'+note+'</span>'+
+        '<span class="wlprice">'+fmtMAD(it.price)+'</span></button>'; }
     return '<div class="wlcard'+(it.bought?' bought':'')+'" style="--tc:var(--wl);--tcl:var(--wl-l)">'+
       '<button class="toggle'+(it.bought?' on':'')+'" data-act="wl-bought" data-id="'+it.id+'" aria-label="mark bought">'+
         '<svg class="ck" viewBox="0 0 18 18"><path d="M3 9l4 4 8-9"/></svg></button>'+
@@ -829,18 +1042,25 @@
       '<span class="wlprice">'+fmtMAD(it.price)+'</span></div>';
   }
   function renderWishlist(){
-    var items=settings.wishlist||[];
+    var items=settings.wishlist||[], selMode=state.wlSelect;
     var total=0, remaining=0, boughtSum=0;
     items.forEach(function(it){ var p=+it.price||0; total+=p; if(it.bought) boughtSum+=p; else remaining+=p; });
-    var cards=items.length? items.map(wishCardHTML).join('') : '<div class="wlempty">Nothing on your list yet.<br>Add something you want.</div>';
-    var totalCard=items.length? '<div class="wltotalcard">'+
+    var cards=items.length? items.map(function(it){ return wishCardHTML(it,selMode); }).join('') : '<div class="wlempty">Nothing on your list yet.<br>Add something you want.</div>';
+    var totalCard=(items.length&&!selMode)? '<div class="wltotalcard">'+
         '<div class="row grand"><span class="lbl">Still want</span><span class="amt">'+fmtMAD(remaining)+'</span></div>'+
         (boughtSum>0?'<div class="row"><span class="lbl">Already bought</span><span class="amt">'+fmtMAD(boughtSum)+'</span></div>'+
           '<div class="row"><span class="lbl">List total</span><span class="amt">'+fmtMAD(total)+'</span></div>':'')+
       '</div>' : '';
     var count=items.length? items.length+(items.length===1?' item':' items') : 'empty';
-    return '<div class="greet"><h1>Wishlist</h1><div class="date">Things I want · '+count+'</div></div>'+
-      '<button class="wladd" data-act="wl-add">+ Add something</button>'+cards+totalCard;
+    var selCount=Object.keys(state.wlSel).length;
+    var headBtn=items.length?(selMode
+        ? '<button class="wlselbtn" data-act="wl-cancel">Cancel</button>'
+        : '<button class="wlselbtn" data-act="wl-select">Select</button>'):'';
+    var top='<div class="greet"><div class="ghead"><h1>Wishlist</h1>'+headBtn+'</div><div class="date">Things I want · '+count+'</div></div>';
+    var selBar=selMode? '<div class="wlselbar"><span class="mono">'+selCount+' selected</span>'+
+        '<button class="wldone'+(selCount?'':' off')+'" data-act="wl-doneit">Remove '+(selCount||'')+'</button></div>' : '';
+    var addBtn=selMode?'':'<button class="wladd" data-act="wl-add">+ Add something</button>';
+    return top+addBtn+cards+selBar+totalCard;
   }
   function openWish(id){
     var it=null; (settings.wishlist||[]).forEach(function(x){ if(x.id===id) it=x; });
@@ -854,6 +1074,52 @@
       '<div class="mactions">'+del+'<button class="btn-primary" data-act="wl-save" data-id="'+(id||'')+'">'+(it?'Save':'Add')+'</button></div>'+
       '</div></div>';
     focusInput('wlname',true);
+  }
+
+  /* ============ render: settings ============ */
+  function ruleRowHTML(it){
+    var r=ruleFor(it.key);
+    function b(mode,txt){ return '<button class="rmode'+(r.mode===mode?' on':'')+'" data-act="rule-mode" data-key="'+it.key+'" data-mode="'+mode+'">'+txt+'</button>'; }
+    var wk=r.mode==='weekly'?'<div class="rweek"><button class="rwbtn" data-act="rule-week" data-key="'+it.key+'" data-d="-1">−</button><span class="mono">'+r.perWeek+'×/week</span><button class="rwbtn" data-act="rule-week" data-key="'+it.key+'" data-d="1">+</button></div>':'';
+    return '<div class="srule" style="--rc:'+it.lx+'"><div class="srtop"><span class="srl">'+esc(it.label)+'</span>'+
+      '<div class="rmodes">'+b('off','Off')+b('daily','Daily')+b('weekly','Weekly')+'</div></div>'+wk+'</div>';
+  }
+  function renderSettings(){
+    var rules=streakItems().map(ruleRowHTML).join('');
+    var custom=(settings.customTasks||[]).length? settings.customTasks.map(function(c){
+        var days=(!c.days||!c.days.length)?'every day':c.days.slice().sort().map(function(n){return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][n];}).join(' ');
+        return '<div class="ctrow" style="--rc:'+(c.lx||'#9AA3E6')+'"><button class="ctbody" data-act="edit-task" data-id="'+c.id+'">'+
+          '<div class="ctname">'+esc(c.name)+'</div><div class="ctmeta mono">'+(c.plannedMin>0?fmtDur(c.plannedMin)+' · ':'')+esc(days)+'</div></button>'+
+          '<button class="ctdel" data-act="del-task" data-id="'+c.id+'">Delete</button></div>'; }).join('')
+      : '<div class="wlempty">No custom tasks yet.</div>';
+    var s=computeStreak();
+    return '<div class="greet"><div class="ghead"><h1>Settings</h1><button class="gear" data-act="view" data-view="today" aria-label="Back">✕</button></div>'+
+      '<div class="date">Streak rules &amp; custom tasks</div></div>'+
+      '<div class="panel"><h3>Your name</h3><div class="setrow"><span class="setname">'+esc(settings.name)+'</span>'+
+        '<button class="btn-ghost setbtn" data-act="edit-name">Change</button></div></div>'+
+      '<div class="panel"><h3>Streak freezes</h3><div class="sub">Earn 1 freeze every 7-day streak · spend to bridge a missed day</div>'+
+        '<div class="kpi"><div class="k" style="--kc:var(--cardio-l)"><div class="kv">❄️'+s.available+'</div><div class="kl">available</div></div>'+
+        '<div class="k" style="--kc:var(--cardio-l)"><div class="kv">'+s.earned+'</div><div class="kl">earned total</div></div>'+
+        '<div class="k" style="--kc:var(--cardio-l)"><div class="kv">🔥'+s.streak+'</div><div class="kl">current</div></div></div></div>'+
+      '<div class="panel"><h3>What counts toward the fire</h3><div class="sub">Daily = needed each day it’s planned · Weekly = a goal, never breaks the fire · Off = ignored</div>'+rules+'</div>'+
+      '<div class="panel"><h3>Custom tasks</h3><div class="sub">Your own recurring tasks, shown with the rest</div>'+custom+
+        '<button class="wladd" data-act="add-task" style="margin-top:12px">+ Add task</button></div>';
+  }
+  function openCustom(id){
+    var c=null; (settings.customTasks||[]).forEach(function(x){ if(x.id===id) c=x; });
+    var name=c?c.name:'', min=c?(c.plannedMin||0):0;
+    tmpDays=c?((c.days||[]).slice()):[];
+    var dchips=[[1,'M'],[2,'T'],[3,'W'],[4,'T'],[5,'F'],[6,'S'],[0,'S']].map(function(p){
+      var on=tmpDays.indexOf(p[0])>=0; return '<button class="daychip'+(on?' on':'')+'" data-act="cust-day" data-d="'+p[0]+'">'+p[1]+'</button>'; }).join('');
+    var everyOn=tmpDays.length===0;
+    var del=c?'<button class="btn-danger" data-act="del-task" data-id="'+id+'">Delete</button>':'';
+    modalEl.innerHTML='<div class="scrim" data-act="scrim"><div class="sheet" style="--tc:var(--wl);--tcl:var(--wl-l)" role="dialog" aria-modal="true">'+
+      '<div class="meyebrow">Custom task</div><h2>'+(c?'Edit task':'New task')+'</h2>'+
+      '<div class="field"><div class="fl">Name</div><input id="ctname" class="tin" type="text" value="'+esc(name)+'" placeholder="e.g. Read 20 pages"></div>'+
+      '<div class="field"><div class="fl">Planned minutes · 0 = just a checkbox</div><input id="ctmin" class="tin mono" type="number" inputmode="numeric" min="0" value="'+min+'"></div>'+
+      '<div class="field"><div class="fl">Days</div><div class="daychips"><button class="daychip'+(everyOn?' on':'')+'" data-act="cust-day" data-d="-1">Every day</button>'+dchips+'</div></div>'+
+      '<div class="mactions">'+del+'<button class="btn-primary" data-act="custom-save" data-id="'+(id||'')+'">'+(c?'Save':'Add')+'</button></div></div></div>';
+    focusInput('ctname',true);
   }
 
   /* ============ lock screen ============ */
@@ -893,7 +1159,13 @@
         if(data){ for(var k in data){ if(data[k]) cacheRaw[k]=data[k]; } }
         if(!backendInfo) backendInfo='local';
       }),
-      apiGetSettings().then(function(s){ if(!s) s=lsGet('settings'); if(s){ if(s.name) settings.name=s.name; if(Array.isArray(s.wishlist)) settings.wishlist=s.wishlist; } })
+      apiGetSettings().then(function(s){ if(!s) s=lsGet('settings'); if(s){
+        if(s.name) settings.name=s.name;
+        if(Array.isArray(s.wishlist)) settings.wishlist=s.wishlist;
+        if(Array.isArray(s.customTasks)) settings.customTasks=s.customTasks;
+        if(s.streakRules && typeof s.streakRules==='object') settings.streakRules=s.streakRules;
+        if(s.freezesUsed && typeof s.freezesUsed==='object') settings.freezesUsed=s.freezesUsed;
+      } })
     ]).then(finishLoad).catch(finishLoad);
   }
   function finishLoad(){
