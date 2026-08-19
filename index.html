@@ -415,6 +415,12 @@
     return {mode:'daily',perWeek:4}; // custom tasks default to daily
   }
   function ruleFor(key){ var r=(settings.streakRules||{})[key]; return (r&&r.mode)?{mode:r.mode,perWeek:r.perWeek||4}:defaultRule(key); }
+  // per-track homepage display: 'schedule' (its planned days) | 'daily' (every day) | 'off'
+  var GENERIC={cjca:{name:'Session',min:100},gym:{name:'Workout',min:60},italian:{name:'Study',min:120},chinese:{name:'Study',min:60}};
+  function defaultAppears(key){ return key==='chinese'?'off':'schedule'; }
+  function trackAppears(key){ var m=(settings.trackDisplay||{})[key]; return (m==='schedule'||m==='daily'||m==='off')?m:defaultAppears(key); }
+  function schedEntry(track,d){ var l=SCHED[d.getDay()]||[]; for(var i=0;i<l.length;i++) if(l[i][0]===track) return l[i]; return null; }
+  function builtinAppearsOn(track,d){ var m=trackAppears(track); if(m==='off') return false; if(m==='daily') return true; return !!schedEntry(track,d); }
 
   /* ============ storage: PIN-gated API + localStorage write-through ============ */
   var backendInfo = null; // 'blob' | 'memory' | 'local'
@@ -479,7 +485,7 @@
 
   /* ============ data model ============ */
   var cacheRaw={}, blobs={}, ALL_KEYS=[];
-  var settings={name:'Anwar', wishlist:[], customTasks:[], streakRules:{}, freezesUsed:{}};
+  var settings={name:'Anwar', wishlist:[], customTasks:[], streakRules:{}, freezesUsed:{}, trackDisplay:{}};
   var tmpDays=[]; // custom-task day selection while its modal is open
 
   function customScheduledOn(c,d){
@@ -490,8 +496,13 @@
   }
   function templateFor(key){
     var d=parseKey(key);
-    var list=(SCHED[d.getDay()]||[]).slice().sort(function(a,b){return ORDER.indexOf(a[0])-ORDER.indexOf(b[0]);});
-    var tasks=list.map(function(t){ return {id:t[0],track:t[0],name:t[1],plannedMin:t[2],optional:!!t[3],done:false,actualMin:null,loggedAt:null}; });
+    var tasks=[];
+    ORDER.forEach(function(track){
+      if(!builtinAppearsOn(track,d)) return;
+      var e=schedEntry(track,d), name, min, opt;
+      if(e){ name=e[1]; min=e[2]; opt=!!e[3]; } else { var g=GENERIC[track]; name=g.name; min=g.min; opt=false; }
+      tasks.push({id:track,track:track,name:name,plannedMin:min,optional:opt,done:false,actualMin:null,loggedAt:null});
+    });
     (settings.customTasks||[]).forEach(function(c){
       if(customScheduledOn(c,d)) tasks.push({id:c.id,track:'custom',custom:true,label:c.name,name:c.name,
         hx:c.hx||CUSTOM_PAL[0].hx,lx:c.lx||CUSTOM_PAL[0].lx,plannedMin:c.plannedMin||0,optional:!!c.optional,
@@ -553,8 +564,9 @@
   function streakItems(){
     var out=[];
     ['cjca','gym','italian','chinese'].forEach(function(t){
+      if(trackAppears(t)==='off') return;
       out.push({key:t,label:TRACKS[t].label,hx:TRACKS[t].hx,lx:TRACKS[t].lx,
-        scheduledOn:function(d){return scheduledHas(d,t);}, doneOn:function(k){return taskDone(k,t);}});
+        scheduledOn:function(d){return builtinAppearsOn(t,d);}, doneOn:function(k){return taskDone(k,t);}});
     });
     out.push({key:'cardio',label:'Cardio',hx:TRACKS.cardio.hx,lx:TRACKS.cardio.lx,
       scheduledOn:function(){return true;}, doneOn:function(k){return activitiesFor(k).length>0;}});
@@ -647,7 +659,7 @@
     } else if(track==='cardio'){
       var acts=activitiesFor(TODAY_KEY); st=acts.length?'done':'empty'; info=acts.length?acts.length+'×':'—';
     } else {
-      var sched=scheduledHas(TODAY,track);
+      var sched=builtinAppearsOn(track,TODAY);
       st = !sched ? 'rest' : (taskDone(TODAY_KEY,track)?'done':'empty');
       info = !sched?'rest':(taskDone(TODAY_KEY,track)?'done':'to-do');
     }
@@ -730,7 +742,7 @@
     var total=required.length+5, done=0;
     required.forEach(function(t){ if(t.done)done++; }); done+=prayerDoneCount(TODAY_KEY);
     var pct=total?Math.round(done/total*100):0;
-    var pills=PILL_ORDER.map(pillHTML).join('');
+    var pills=PILL_ORDER.filter(function(t){ return (t==='cardio'||t==='prayer')?true:(trackAppears(t)!=='off'); }).map(pillHTML).join('');
     var cards=b.tasks.length? b.tasks.map(taskCardHTML).join('')
       : '<div class="card" style="--tc:var(--faint);--tcl:var(--muted)"><span class="body"><div class="nm" style="color:var(--muted)">Rest day — no scheduled sessions</div></span></div>';
     var acts=activitiesFor(TODAY_KEY);
@@ -944,6 +956,7 @@
       if(t2){ t2.done=false; t2.actualMin=null; t2.loggedAt=null; } saveDay(TODAY_KEY); closeModal(); render(); return; }
 
     if(act==='open-settings'){ state.view='settings'; render(); return; }
+    if(act==='show-mode'){ var sk=el.getAttribute('data-key'), sm=el.getAttribute('data-mode'); if(!settings.trackDisplay) settings.trackDisplay={}; settings.trackDisplay[sk]=sm; apiSaveSettings(settings); render(); return; }
     if(act==='use-freeze'){ var s=computeStreak(); if(s.canRestore){ if(!settings.freezesUsed) settings.freezesUsed={}; s.gapDays.forEach(function(k){ settings.freezesUsed[k]=true; }); apiSaveSettings(settings); render(); } return; }
     if(act==='rule-mode'){ var rk=el.getAttribute('data-key'), rm=el.getAttribute('data-mode'); if(!settings.streakRules) settings.streakRules={};
       var cur=ruleFor(rk); settings.streakRules[rk]={mode:rm,perWeek:cur.perWeek||4}; apiSaveSettings(settings); render(); return; }
@@ -1084,7 +1097,14 @@
     return '<div class="srule" style="--rc:'+it.lx+'"><div class="srtop"><span class="srl">'+esc(it.label)+'</span>'+
       '<div class="rmodes">'+b('off','Off')+b('daily','Daily')+b('weekly','Weekly')+'</div></div>'+wk+'</div>';
   }
+  function appearsRowHTML(track){
+    var m=trackAppears(track), T=TRACKS[track];
+    function b(mode,txt){ return '<button class="rmode'+(m===mode?' on':'')+'" data-act="show-mode" data-key="'+track+'" data-mode="'+mode+'">'+txt+'</button>'; }
+    return '<div class="srule" style="--rc:'+T.lx+'"><div class="srtop"><span class="srl">'+T.label+'</span>'+
+      '<div class="rmodes">'+b('schedule','Plan')+b('daily','Every day')+b('off','Off')+'</div></div></div>';
+  }
   function renderSettings(){
+    var shows=['cjca','gym','italian','chinese'].map(appearsRowHTML).join('');
     var rules=streakItems().map(ruleRowHTML).join('');
     var custom=(settings.customTasks||[]).length? settings.customTasks.map(function(c){
         var days=(!c.days||!c.days.length)?'every day':c.days.slice().sort().map(function(n){return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][n];}).join(' ');
@@ -1101,6 +1121,7 @@
         '<div class="kpi"><div class="k" style="--kc:var(--cardio-l)"><div class="kv">❄️'+s.available+'</div><div class="kl">available</div></div>'+
         '<div class="k" style="--kc:var(--cardio-l)"><div class="kv">'+s.earned+'</div><div class="kl">earned total</div></div>'+
         '<div class="k" style="--kc:var(--cardio-l)"><div class="kv">🔥'+s.streak+'</div><div class="kl">current</div></div></div></div>'+
+      '<div class="panel"><h3>Show on homepage</h3><div class="sub">Which sessions appear · Plan = its scheduled days · Every day = shows daily · Off = hidden</div>'+shows+'</div>'+
       '<div class="panel"><h3>What counts toward the fire</h3><div class="sub">Daily = needed each day it’s planned · Weekly = a goal, never breaks the fire · Off = ignored</div>'+rules+'</div>'+
       '<div class="panel"><h3>Custom tasks</h3><div class="sub">Your own recurring tasks, shown with the rest</div>'+custom+
         '<button class="wladd" data-act="add-task" style="margin-top:12px">+ Add task</button></div>';
@@ -1165,6 +1186,7 @@
         if(Array.isArray(s.customTasks)) settings.customTasks=s.customTasks;
         if(s.streakRules && typeof s.streakRules==='object') settings.streakRules=s.streakRules;
         if(s.freezesUsed && typeof s.freezesUsed==='object') settings.freezesUsed=s.freezesUsed;
+        if(s.trackDisplay && typeof s.trackDisplay==='object') settings.trackDisplay=s.trackDisplay;
       } })
     ]).then(finishLoad).catch(finishLoad);
   }

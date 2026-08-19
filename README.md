@@ -3,7 +3,7 @@
 A mobile-first, single-user tracker for a 6-track self-improvement season (Aug–Dec 2026):
 **CJCA, Gym, Italian, Chinese (optional), Cardio (Run / Ride / Swim, ad-hoc), and the 5 daily prayers.**
 
-- **Sessions** are auto-generated each day from a fixed weekly schedule (Gym / CJCA / Italian, plus optional Chinese). Check one off and log the actual minutes.
+- **Sessions** are auto-generated each day from a weekly schedule (Gym / CJCA / Italian / Chinese). Check one off and log the actual minutes. In **Settings → Show on homepage** each of these can be set to **Plan** (its scheduled days), **Every day**, or **Off** — e.g. show Gym every day, hide Chinese. (Chinese is Off by default.)
 - **Cardio** is ad-hoc: tap `+ Run`, `+ Ride`, or `+ Swim` any time to log distance (km) + duration. Multiple per day, editable and deletable.
 - **Prayers**: five one-tap toggles with a recorded timestamp.
 - **Custom tasks**: add your own recurring tasks (name, optional minutes, which weekdays) via **+ Add task** — they show alongside the built-ins. Minutes = 0 makes it a plain checkbox.
