@@ -116,12 +116,12 @@
   .taprow{display:flex;align-items:center;gap:12px;flex:1;min-width:0;text-align:left}
 
   /* Cardio */
-  .actbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
-  .actbtn{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 6px;
+  .actbtns{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}
+  .actbtn{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 4px;
     display:flex;flex-direction:column;align-items:center;gap:5px;border-top:2px solid var(--ac)}
   .actbtn:active{background:var(--raised)}
   .actbtn .ico{font-size:19px;line-height:1}
-  .actbtn .lb{font-size:12px;font-weight:600;color:var(--acl)}
+  .actbtn .lb{font-size:11px;font-weight:600;color:var(--acl);white-space:nowrap}
   .actcard{display:flex;gap:12px;align-items:center;background:var(--raised);border:1px solid var(--line);
     border-radius:12px;padding:11px 12px 11px 14px;margin-bottom:8px;border-left:4px solid var(--ac)}
   .actcard .ico{font-size:18px;flex:0 0 auto}
@@ -379,26 +379,29 @@
     italian: {label:'Italian', hx:'#8C7A2E', lx:'#D8C36A'},
     chinese: {label:'Chinese', hx:'#A63D5C', lx:'#E07E9A'},
     cardio:  {label:'Cardio',  hx:'#2E6FB0', lx:'#6FA8E0'},
+    strength:{label:'Strength',hx:'#D65F2E', lx:'#F0946B'},
     prayer:  {label:'Prayer',  hx:'#4B5AA6', lx:'#8C98D8'}
   };
   var ACT = {
-    running:  {label:'Run',  verb:'New run',  ico:'🏃', hx:'#2E6FB0', lx:'#6FA8E0', mode:'pace'},
-    cycling:  {label:'Ride', verb:'New ride', ico:'🚴', hx:'#149A9A', lx:'#57C9C9', mode:'speed'},
-    swimming: {label:'Swim', verb:'New swim', ico:'🏊', hx:'#3AA5C4', lx:'#78CBE6', mode:'pace'}
+    running:  {label:'Run',  verb:'New run',  ico:'🏃', hx:'#2E6FB0', lx:'#6FA8E0', mode:'pace', dist:true},
+    cycling:  {label:'Ride', verb:'New ride', ico:'🚴', hx:'#149A9A', lx:'#57C9C9', mode:'speed', dist:true},
+    swimming: {label:'Swim', verb:'New swim', ico:'🏊', hx:'#3AA5C4', lx:'#78CBE6', mode:'pace', dist:true},
+    strength: {label:'Strength', verb:'New strength', ico:'🏋️', hx:'#D65F2E', lx:'#F0946B', dist:false}
   };
-  var ORDER = ['cjca','gym','italian','chinese'];          // checklist display order
-  var PILL_ORDER = ['cjca','gym','italian','chinese','cardio','prayer'];
+  var CARDIO_TYPES = ['running','cycling','swimming']; // distance-based; strength is separate
+  var ORDER = ['cjca','italian','chinese'];          // checklist session display order (gym is now an activity)
+  var PILL_ORDER = ['cjca','italian','chinese','cardio','strength','prayer'];
   var PRAYERS = ['fajr','dhuhr','asr','maghrib','isha'];
   var PRAYER_LABEL = {fajr:'Fajr',dhuhr:'Dhuhr',asr:'Asr',maghrib:'Maghrib',isha:'Isha'};
   // weekday (0=Sun) -> [track, name, plannedMin, optional]
   var SCHED = {
-    1:[['gym','Back & Biceps',70,false],['cjca','Session',100,false],['italian','Grammar + shadowing',135,false],['chinese','Study',60,true]],
+    1:[['cjca','Session',100,false],['italian','Grammar + shadowing',135,false],['chinese','Study',60,true]],
     2:[['cjca','Session',100,false],['italian','Grammar + listening',165,false],['chinese','Study',60,true]],
-    3:[['gym','Shoulders & Triceps',70,false],['cjca','Session',100,false],['italian','Grammar + shadowing',135,false],['chinese','Study',60,true]],
+    3:[['cjca','Session',100,false],['italian','Grammar + shadowing',135,false],['chinese','Study',60,true]],
     4:[['cjca','Session',100,false],['italian','Grammar + listening',165,false],['chinese','Study',60,true]],
-    5:[['gym','Legs',75,false],['cjca','Session',100,false],['italian','Grammar + shadowing',135,false],['chinese','Study',60,true]],
-    6:[['gym','Chest & Abs',60,false],['cjca','Deep lab',110,false],['italian','Tutor session',180,false],['chinese','Study',60,true]],
-    0:[['gym','Arms (optional)',35,true],['italian','Passive listening',60,false],['chinese','Anki review',40,true]]
+    5:[['cjca','Session',100,false],['italian','Grammar + shadowing',135,false],['chinese','Study',60,true]],
+    6:[['cjca','Deep lab',110,false],['italian','Tutor session',180,false],['chinese','Study',60,true]],
+    0:[['italian','Passive listening',60,false],['chinese','Anki review',40,true]]
   };
   var TARGETS = {italian:350, chinese:140, cjca:210}; // season-total hours
   var SEASON_START = new Date(2026,7,1);
@@ -406,17 +409,17 @@
   // color palette assigned to custom tasks, round-robin
   var CUSTOM_PAL=[{hx:'#6E7AD6',lx:'#9AA3E6'},{hx:'#3FA3A3',lx:'#6FD0D0'},{hx:'#C56BB0',lx:'#E39ACF'},{hx:'#7FA23F',lx:'#AEC96F'},{hx:'#C9803F',lx:'#E6B176'}];
   // order of built-in streak-eligible items in Settings
-  var STREAK_ORDER=['cjca','gym','italian','chinese','cardio','prayer'];
+  var STREAK_ORDER=['cjca','italian','chinese','cardio','strength','prayer'];
   function defaultRule(key){
     if(key==='cjca'||key==='italian'||key==='prayer') return {mode:'daily',perWeek:4};
-    if(key==='gym') return {mode:'weekly',perWeek:4};
+    if(key==='strength') return {mode:'weekly',perWeek:4};
     if(key==='cardio') return {mode:'weekly',perWeek:3};
     if(key==='chinese') return {mode:'off',perWeek:4};
     return {mode:'daily',perWeek:4}; // custom tasks default to daily
   }
   function ruleFor(key){ var r=(settings.streakRules||{})[key]; return (r&&r.mode)?{mode:r.mode,perWeek:r.perWeek||4}:defaultRule(key); }
   // per-track homepage display: 'schedule' (its planned days) | 'daily' (every day) | 'off'
-  var GENERIC={cjca:{name:'Session',min:100},gym:{name:'Workout',min:60},italian:{name:'Study',min:120},chinese:{name:'Study',min:60}};
+  var GENERIC={cjca:{name:'Session',min:100},italian:{name:'Study',min:120},chinese:{name:'Study',min:60}};
   function defaultAppears(key){ return key==='chinese'?'off':'schedule'; }
   function trackAppears(key){ var m=(settings.trackDisplay||{})[key]; return (m==='schedule'||m==='daily'||m==='off')?m:defaultAppears(key); }
   function schedEntry(track,d){ var l=SCHED[d.getDay()]||[]; for(var i=0;i<l.length;i++) if(l[i][0]===track) return l[i]; return null; }
@@ -521,7 +524,7 @@
       var byId={}; (raw.tasks||[]).forEach(function(x){ byId[x.id||x.track]=x; });
       t.tasks.forEach(function(task){ var s=byId[task.id]; if(s){ task.done=!!s.done; task.actualMin=(s.actualMin!=null?s.actualMin:null); task.loggedAt=s.loggedAt||null; } });
       if(raw.prayers){ PRAYERS.forEach(function(p){ if(raw.prayers[p]) t.prayers[p]={done:!!raw.prayers[p].done,loggedAt:raw.prayers[p].loggedAt||null}; }); }
-      if(Array.isArray(raw.activities)){ t.activities=raw.activities.map(function(a){ return {id:a.id,type:a.type,km:+a.km||0,min:+a.min||0,loggedAt:a.loggedAt||null}; }); }
+      if(Array.isArray(raw.activities)){ t.activities=raw.activities.map(function(a){ return {id:a.id,type:a.type,km:+a.km||0,min:+a.min||0,note:a.note||'',loggedAt:a.loggedAt||null}; }); }
       t.nudgeDismissed=!!raw.nudgeDismissed;
     }
     blobs[key]=t; return t;
@@ -554,22 +557,26 @@
     while(d<=TODAY){ out.push({done:prayerDoneCount(fmt(d))===5,isToday:dayDiff(d,TODAY)===0}); d=addDays(d,1); }
     return statsFromHistory(out);
   }
-  function cardioStats(){
+  function activityDayStats(pred){
     var out=[],d=new Date(SEASON_START);
-    while(d<=TODAY){ out.push({done:activitiesFor(fmt(d)).length>0,isToday:dayDiff(d,TODAY)===0}); d=addDays(d,1); }
+    while(d<=TODAY){ out.push({done:activitiesFor(fmt(d)).some(pred),isToday:dayDiff(d,TODAY)===0}); d=addDays(d,1); }
     return statsFromHistory(out);
   }
+  function cardioStats(){ return activityDayStats(function(a){return CARDIO_TYPES.indexOf(a.type)>=0;}); }
+  function strengthStats(){ return activityDayStats(function(a){return a.type==='strength';}); }
 
   /* ---- global streak engine ---- */
   function streakItems(){
     var out=[];
-    ['cjca','gym','italian','chinese'].forEach(function(t){
+    ['cjca','italian','chinese'].forEach(function(t){
       if(trackAppears(t)==='off') return;
       out.push({key:t,label:TRACKS[t].label,hx:TRACKS[t].hx,lx:TRACKS[t].lx,
         scheduledOn:function(d){return builtinAppearsOn(t,d);}, doneOn:function(k){return taskDone(k,t);}});
     });
     out.push({key:'cardio',label:'Cardio',hx:TRACKS.cardio.hx,lx:TRACKS.cardio.lx,
-      scheduledOn:function(){return true;}, doneOn:function(k){return activitiesFor(k).length>0;}});
+      scheduledOn:function(){return true;}, doneOn:function(k){return activitiesFor(k).some(function(a){return CARDIO_TYPES.indexOf(a.type)>=0;});}});
+    out.push({key:'strength',label:'Strength',hx:TRACKS.strength.hx,lx:TRACKS.strength.lx,
+      scheduledOn:function(){return true;}, doneOn:function(k){return activitiesFor(k).some(function(a){return a.type==='strength';});}});
     out.push({key:'prayer',label:'Prayer',hx:TRACKS.prayer.hx,lx:TRACKS.prayer.lx,
       scheduledOn:function(){return true;}, doneOn:function(k){return prayerDoneCount(k)===5;}});
     (settings.customTasks||[]).forEach(function(c){
@@ -614,7 +621,7 @@
   function weekAgg(offset){
     var mon=weekMonday(offset), res={}, totP=0,totL=0,elapsedP=0,elapsedL=0;
     ORDER.forEach(function(t){ res[t]={plan:0,log:0}; });
-    var cardio={running:{km:0,min:0},cycling:{km:0,min:0},swimming:{km:0,min:0}};
+    var cardio={running:{km:0,min:0},cycling:{km:0,min:0},swimming:{km:0,min:0},strength:{km:0,min:0}};
     for(var i=0;i<7;i++){
       var d=addDays(mon,i); if(d<SEASON_START) continue;
       var past=dayDiff(d,TODAY)<=0, b=getBlob(fmt(d));
@@ -628,7 +635,7 @@
     return {mon:mon,res:res,cardio:cardio,totP:totP,totL:totL,elapsedP:elapsedP,elapsedL:elapsedL};
   }
   function completion(days){
-    var res={}; ['cjca','gym','italian','chinese','prayer'].forEach(function(t){ res[t]={sched:0,done:0}; });
+    var res={}; ['cjca','italian','chinese','prayer'].forEach(function(t){ res[t]={sched:0,done:0}; });
     ALL_KEYS.slice(-days).forEach(function(k){
       var b=getBlob(k);
       b.tasks.forEach(function(task){ if(res[task.track]){ res[task.track].sched++; if(task.done) res[task.track].done++; } });
@@ -637,8 +644,8 @@
     return res;
   }
   function cumulative(){
-    var res={cjca:0,gym:0,italian:0,chinese:0};
-    var cardio={running:{km:0,min:0},cycling:{km:0,min:0},swimming:{km:0,min:0}};
+    var res={cjca:0,italian:0,chinese:0};
+    var cardio={running:{km:0,min:0},cycling:{km:0,min:0},swimming:{km:0,min:0},strength:{km:0,min:0}};
     ALL_KEYS.forEach(function(k){ var b=getBlob(k);
       b.tasks.forEach(function(task){ if(task.done&&task.actualMin!=null&&res[task.track]!=null) res[task.track]+=task.actualMin; });
       b.activities.forEach(function(a){ if(cardio[a.type]){ cardio[a.type].km+=+a.km||0; cardio[a.type].min+=+a.min||0; } });
@@ -657,7 +664,9 @@
     if(track==='prayer'){
       var n=prayerDoneCount(TODAY_KEY); st=n===0?'empty':(n===5?'done':'partial'); info=n+'/5';
     } else if(track==='cardio'){
-      var acts=activitiesFor(TODAY_KEY); st=acts.length?'done':'empty'; info=acts.length?acts.length+'×':'—';
+      var ca=activitiesFor(TODAY_KEY).filter(function(a){return CARDIO_TYPES.indexOf(a.type)>=0;}); st=ca.length?'done':'empty'; info=ca.length?ca.length+'×':'—';
+    } else if(track==='strength'){
+      var sa=activitiesFor(TODAY_KEY).filter(function(a){return a.type==='strength';}); st=sa.length?'done':'empty'; info=sa.length?sa.length+'×':'—';
     } else {
       var sched=builtinAppearsOn(track,TODAY);
       st = !sched ? 'rest' : (taskDone(TODAY_KEY,track)?'done':'empty');
@@ -689,11 +698,13 @@
     var M=ACT[a.type]; if(!M) return '';
     var tm=a.loggedAt?new Date(a.loggedAt):null;
     var tmS=tm?String(tm.getHours()).padStart(2,'0')+':'+String(tm.getMinutes()).padStart(2,'0'):'';
-    var extra=a.mode==='speed'||M.mode==='speed'?speedStr(a.km,a.min):paceStr(a.km,a.min);
+    var parts;
+    if(M.dist===false){ parts='<span>'+fmtDur(a.min)+'</span>'+(a.note?'<span>'+esc(a.note)+'</span>':''); }
+    else { var extra=M.mode==='speed'?speedStr(a.km,a.min):paceStr(a.km,a.min);
+      parts='<span>'+fmtKm(a.km)+'</span><span>'+fmtDur(a.min)+'</span>'+(extra?'<span>'+extra+'</span>':''); }
     return '<button class="actcard" style="--ac:'+M.hx+';--acl:'+M.lx+'" data-act="edit-activity" data-id="'+a.id+'">'+
       '<span class="ico">'+M.ico+'</span><span class="body"><div class="t">'+M.label+'</div>'+
-      '<div class="d"><span>'+fmtKm(a.km)+'</span><span>'+fmtDur(a.min)+'</span>'+(extra?'<span>'+extra+'</span>':'')+
-      (tmS?'<span class="tm">'+tmS+'</span>':'')+'</div></span><span class="chev">›</span></button>';
+      '<div class="d">'+parts+(tmS?'<span class="tm">'+tmS+'</span>':'')+'</div></span><span class="chev">›</span></button>';
   }
 
   function prayerHTML(){
@@ -747,7 +758,7 @@
       : '<div class="card" style="--tc:var(--faint);--tcl:var(--muted)"><span class="body"><div class="nm" style="color:var(--muted)">Rest day — no scheduled sessions</div></span></div>';
     var acts=activitiesFor(TODAY_KEY);
     var actList = acts.length? acts.map(activityCardHTML).join('') : '<div class="actempty">No cardio logged yet today.</div>';
-    var actbtns=['running','cycling','swimming'].map(function(ty){ var M=ACT[ty];
+    var actbtns=['running','cycling','swimming','strength'].map(function(ty){ var M=ACT[ty];
       return '<button class="actbtn" style="--ac:'+M.hx+';--acl:'+M.lx+'" data-act="add-activity" data-type="'+ty+'">'+
         '<span class="ico">'+M.ico+'</span><span class="lb">+ '+M.label+'</span></button>'; }).join('');
 
@@ -763,7 +774,7 @@
     nudgeHTML(total,done)+
     weeklyGoalsHTML()+
     '<div class="shead">Sessions <button class="miniadd" data-act="add-task">+ Add task</button></div>'+cards+
-    '<div class="shead">Cardio <span class="c">'+acts.length+' today</span></div>'+
+    '<div class="shead">Activity <span class="c">'+acts.length+' today</span></div>'+
       '<div class="actbtns">'+actbtns+'</div>'+actList+
     '<div class="shead">Prayers <span class="c">'+prayerDoneCount(TODAY_KEY)+' / 5</span></div>'+prayerHTML();
   }
@@ -800,29 +811,31 @@
       '<button class="arw" data-act="week" data-d="1"'+(state.weekOffset>=0?' disabled':'')+'>›</button></div>'+bars+
       '<div class="totrow"><span>Core total</span><span><b>'+fmtDur(w.totL)+'</b> / '+fmtDur(w.totP)+'</span></div>'+paceNote+'</div>';
 
-    // cardio week
-    var cw=w.cardio, cKm=cw.running.km+cw.cycling.km+cw.swimming.km, cMin=cw.running.min+cw.cycling.min+cw.swimming.min;
-    var cardioRows=['running','cycling','swimming'].map(function(ty){ var M=ACT[ty], c=cw[ty];
-      return '<div class="srow" style="--bc:'+M.lx+'"><span class="sl">'+M.ico+' '+M.label+'</span>'+
-        '<span class="sv"><span>'+fmtKm(c.km)+'</span><span class="lng">'+fmtDur(c.min)+'</span></span></div>'; }).join('');
-    out+='<div class="panel"><h3>Cardio this week</h3><div class="sub">Distance &amp; time by activity</div>'+
-      '<div class="kpi"><div class="k" style="--kc:var(--cardio-l)"><div class="kv">'+(Math.round(cKm*10)/10)+'</div><div class="kl">km total</div></div>'+
-      '<div class="k" style="--kc:var(--cardio-l)"><div class="kv">'+fmtDur(cMin)+'</div><div class="kl">time</div></div>'+
-      '<div class="k" style="--kc:var(--cardio-l)"><div class="kv">🔥'+cardioStats().current+'</div><div class="kl">active streak</div></div></div>'+
+    // activity week
+    var cw=w.cardio, atypes=['running','cycling','swimming','strength'];
+    var cKm=cw.running.km+cw.cycling.km+cw.swimming.km;
+    var cMin=atypes.reduce(function(s,ty){return s+cw[ty].min;},0);
+    var cardioRows=atypes.map(function(ty){ var M=ACT[ty], c=cw[ty];
+      var val=M.dist===false?'<span>'+fmtDur(c.min)+'</span>':'<span>'+fmtKm(c.km)+'</span><span class="lng">'+fmtDur(c.min)+'</span>';
+      return '<div class="srow" style="--bc:'+M.lx+'"><span class="sl">'+M.ico+' '+M.label+'</span><span class="sv">'+val+'</span></div>'; }).join('');
+    out+='<div class="panel"><h3>Activity this week</h3><div class="sub">Distance &amp; time by activity</div>'+
+      '<div class="kpi"><div class="k" style="--kc:var(--cardio-l)"><div class="kv">'+(Math.round(cKm*10)/10)+'</div><div class="kl">km cardio</div></div>'+
+      '<div class="k" style="--kc:var(--cardio-l)"><div class="kv">'+fmtDur(cMin)+'</div><div class="kl">total time</div></div>'+
+      '<div class="k" style="--kc:var(--gym-l)"><div class="kv">🔥'+strengthStats().current+'</div><div class="kl">strength</div></div></div>'+
       cardioRows+'</div>';
 
     // streaks
     var srows=PILL_ORDER.map(function(t){
-      var s = t==='prayer'?prayerStats():(t==='cardio'?cardioStats():trackStats(t));
+      var s = t==='prayer'?prayerStats():(t==='cardio'?cardioStats():(t==='strength'?strengthStats():trackStats(t)));
       var brk=s.broken&&s.lost>0?'<span class="brk">broke (was '+s.lost+')</span>':'';
-      var sfx = t==='prayer'?' (5/day)':(t==='cardio'?' (any day)':(t==='chinese'?' (opt)':''));
+      var sfx = t==='prayer'?' (5/day)':((t==='cardio'||t==='strength')?' (any day)':(t==='chinese'?' (opt)':''));
       return '<div class="srow" style="--bc:'+TRACKS[t].lx+'"><span class="sl">'+TRACKS[t].label+sfx+'</span>'+
         '<span class="sv"><span>🔥'+s.current+'</span><span class="lng">best '+s.longest+'</span>'+brk+'</span></div>'; }).join('');
     out+='<div class="panel"><h3>Streaks</h3><div class="sub">Consecutive days completed</div>'+srows+'</div>';
 
     // completion
     var comp=completion(state.complWin);
-    var crows=['cjca','gym','italian','chinese','prayer'].map(function(t){ var r=comp[t], pct=r.sched?Math.round(r.done/r.sched*100):0;
+    var crows=['cjca','italian','chinese','prayer'].map(function(t){ var r=comp[t], pct=r.sched?Math.round(r.done/r.sched*100):0;
       return '<div class="brow" style="--bc:'+TRACKS[t].lx+'"><div class="bh"><span class="bt">'+TRACKS[t].label+'</span>'+
         '<span class="bv"><b>'+pct+'%</b> · '+r.done+'/'+r.sched+'</span></div>'+
         '<div class="btrack"><div class="bfill" style="width:'+pct+'%;background:'+TRACKS[t].hx+'"></div></div></div>'; }).join('');
@@ -833,7 +846,7 @@
     // season totals
     var cum=cumulative();
     var totalDays=dayDiff(SEASON_END,SEASON_START)+1, elapsed=Math.max(1,dayDiff(TODAY,SEASON_START)+1), frac=Math.min(1,elapsed/totalDays);
-    var srows2=['cjca','gym','italian','chinese'].map(function(t){ var hLog=cum.time[t]/60, tgt=TARGETS[t];
+    var srows2=['cjca','italian','chinese'].map(function(t){ var hLog=cum.time[t]/60, tgt=TARGETS[t];
       if(tgt){ var pct=Math.min(100,hLog/tgt*100), pace=Math.round(tgt*frac), okp=hLog>=tgt*frac*0.9;
         return '<div class="brow" style="--bc:'+TRACKS[t].lx+'"><div class="bh"><span class="bt">'+TRACKS[t].label+(t==='chinese'?' (opt)':'')+'</span>'+
           '<span class="bv"><b>'+Math.round(hLog)+'h</b> / '+tgt+'h <span class="'+(okp?'onpace':'offpace')+'">'+(okp?'✓':'↓')+'</span></span></div>'+
@@ -843,9 +856,9 @@
         '<span class="bv"><b>'+fmtDur(cum.time[t])+'</b> total</span></div>'+
         '<div class="btrack"><div class="bfill" style="width:'+Math.min(100,hLog/50*100)+'%;background:'+TRACKS[t].hx+'"></div></div></div>'; }).join('');
     var cc=cum.cardio, ckmT=cc.running.km+cc.cycling.km+cc.swimming.km;
-    var cardioCum=['running','cycling','swimming'].map(function(ty){ var M=ACT[ty],c=cc[ty];
-      return '<div class="srow" style="--bc:'+M.lx+'"><span class="sl">'+M.ico+' '+M.label+'</span>'+
-        '<span class="sv"><span>'+fmtKm(c.km)+'</span><span class="lng">'+fmtDur(c.min)+'</span></span></div>'; }).join('');
+    var cardioCum=['running','cycling','swimming','strength'].map(function(ty){ var M=ACT[ty],c=cc[ty];
+      var val=M.dist===false?'<span>'+fmtDur(c.min)+'</span>':'<span>'+fmtKm(c.km)+'</span><span class="lng">'+fmtDur(c.min)+'</span>';
+      return '<div class="srow" style="--bc:'+M.lx+'"><span class="sl">'+M.ico+' '+M.label+'</span><span class="sv">'+val+'</span></div>'; }).join('');
     out+='<div class="panel"><h3>Season total</h3><div class="sub">Since Aug 1 · tick = expected pace</div>'+srows2+
       '<div class="totrow"><span>Cardio distance</span><span><b>'+(Math.round(ckmT*10)/10)+' km</b></span></div>'+cardioCum+'</div>';
 
@@ -907,21 +920,29 @@
   function openActivity(type,id){
     var M=ACT[type]; var existing=null;
     if(id){ activitiesFor(TODAY_KEY).forEach(function(a){ if(a.id===id){ existing=a; type=a.type; } }); M=ACT[type]; }
-    var km=existing?existing.km:0, min=existing?existing.min:(type==='swimming'?30:40);
+    var min=existing?existing.min:(type==='swimming'?30:(type==='strength'?60:40));
     var vars='--tc:'+M.hx+';--tcl:'+M.lx;
     var rm=existing?'<button class="btn-danger" data-act="del-activity" data-id="'+id+'">Delete</button>':'';
-    var kmStep = type==='swimming'?0.5:1;
+    var durField='<div class="field"><div class="fl">Duration</div><div class="stepper"><button data-act="step" data-t="amin" data-s="-5">−</button>'+
+        '<div class="valwrap"><input id="amin" class="mono" type="number" inputmode="numeric" value="'+min+'" min="0"><div class="unit">minutes</div></div>'+
+        '<button data-act="step" data-t="amin" data-s="5">+</button></div></div>';
+    var body, sub;
+    if(M.dist===false){ // strength: duration + focus note
+      sub='Log time and (optionally) what you trained — timestamp is automatic.';
+      var note=existing?(existing.note||''):'';
+      body=durField+'<div class="field"><div class="fl">Focus (optional)</div><input id="anote" class="tin" type="text" value="'+esc(note)+'" placeholder="e.g. Back & Biceps"></div>';
+    } else { // cardio: distance + duration
+      sub='Log distance and time — timestamp is recorded automatically.';
+      var km=existing?existing.km:0, kmStep=type==='swimming'?0.5:1;
+      body='<div class="field"><div class="fl">Distance</div><div class="stepper"><button data-act="step" data-t="km" data-s="'+(-kmStep)+'">−</button>'+
+        '<div class="valwrap"><input id="km" class="mono" type="number" inputmode="decimal" step="0.1" value="'+km+'" min="0"><div class="unit">km</div></div>'+
+        '<button data-act="step" data-t="km" data-s="'+kmStep+'">+</button></div></div>'+durField;
+    }
     modalEl.innerHTML='<div class="scrim" data-act="scrim"><div class="sheet" style="'+vars+'" role="dialog" aria-modal="true">'+
       '<div class="meyebrow">'+M.ico+' '+M.label+'</div><h2>'+(existing?'Edit ':M.verb)+'</h2>'+
-      '<div class="mplan">Log distance and time — timestamp is recorded automatically.</div>'+
-      '<div class="field"><div class="fl">Distance</div><div class="stepper"><button data-act="step" data-t="km" data-s="'+(-kmStep)+'">−</button>'+
-        '<div class="valwrap"><input id="km" class="mono" type="number" inputmode="decimal" step="0.1" value="'+km+'" min="0"><div class="unit">km</div></div>'+
-        '<button data-act="step" data-t="km" data-s="'+kmStep+'">+</button></div></div>'+
-      '<div class="field"><div class="fl">Duration</div><div class="stepper"><button data-act="step" data-t="amin" data-s="-5">−</button>'+
-        '<div class="valwrap"><input id="amin" class="mono" type="number" inputmode="numeric" value="'+min+'" min="0"><div class="unit">minutes</div></div>'+
-        '<button data-act="step" data-t="amin" data-s="5">+</button></div></div>'+
+      '<div class="mplan">'+sub+'</div>'+body+
       '<div class="mactions">'+rm+'<button class="btn-primary" data-act="save-activity" data-type="'+type+'" data-id="'+(id||'')+'">'+(existing?'Save':'Add')+'</button></div></div></div>';
-    focusInput('km');
+    focusInput(M.dist===false?'amin':'km');
   }
 
   function openName(){
@@ -983,9 +1004,12 @@
     if(act==='add-activity'){ openActivity(el.getAttribute('data-type'),null); return; }
     if(act==='edit-activity'){ openActivity(null,el.getAttribute('data-id')); return; }
     if(act==='save-activity'){ var type=el.getAttribute('data-type'), aid=el.getAttribute('data-id')||null;
-      var km=Math.max(0,numVal('km')), min=Math.max(0,Math.round(numVal('amin'))), b3=getBlob(TODAY_KEY);
-      if(aid){ b3.activities.forEach(function(a){ if(a.id===aid){ a.km=km; a.min=min; } }); }
-      else { b3.activities.push({id:newId(),type:type,km:km,min:min,loggedAt:nowISO()}); }
+      var hasDist=!(ACT[type]&&ACT[type].dist===false);
+      var km=hasDist?Math.max(0,numVal('km')):0, min=Math.max(0,Math.round(numVal('amin')));
+      var nEl=document.getElementById('anote'), note=nEl?(nEl.value||'').trim():'';
+      var b3=getBlob(TODAY_KEY);
+      if(aid){ b3.activities.forEach(function(a){ if(a.id===aid){ a.km=km; a.min=min; a.note=note; } }); }
+      else { b3.activities.push({id:newId(),type:type,km:km,min:min,note:note,loggedAt:nowISO()}); }
       saveDay(TODAY_KEY); closeModal(); render(); return; }
     if(act==='del-activity'){ var did=el.getAttribute('data-id'), b4=getBlob(TODAY_KEY);
       b4.activities=b4.activities.filter(function(a){ return a.id!==did; }); saveDay(TODAY_KEY); closeModal(); render(); return; }
@@ -1104,7 +1128,7 @@
       '<div class="rmodes">'+b('schedule','Plan')+b('daily','Every day')+b('off','Off')+'</div></div></div>';
   }
   function renderSettings(){
-    var shows=['cjca','gym','italian','chinese'].map(appearsRowHTML).join('');
+    var shows=['cjca','italian','chinese'].map(appearsRowHTML).join('');
     var rules=streakItems().map(ruleRowHTML).join('');
     var custom=(settings.customTasks||[]).length? settings.customTasks.map(function(c){
         var days=(!c.days||!c.days.length)?'every day':c.days.slice().sort().map(function(n){return ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][n];}).join(' ');

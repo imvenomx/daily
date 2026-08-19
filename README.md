@@ -1,10 +1,10 @@
 # Daily — Season Tracker
 
-A mobile-first, single-user tracker for a 6-track self-improvement season (Aug–Dec 2026):
-**CJCA, Gym, Italian, Chinese (optional), Cardio (Run / Ride / Swim, ad-hoc), and the 5 daily prayers.**
+A mobile-first, single-user tracker for a self-improvement season (Aug–Dec 2026):
+**CJCA, Italian, Chinese, ad-hoc activities (Run / Ride / Swim / Strength), and the 5 daily prayers.**
 
-- **Sessions** are auto-generated each day from a weekly schedule (Gym / CJCA / Italian / Chinese). Check one off and log the actual minutes. In **Settings → Show on homepage** each of these can be set to **Plan** (its scheduled days), **Every day**, or **Off** — e.g. show Gym every day, hide Chinese. (Chinese is Off by default.)
-- **Cardio** is ad-hoc: tap `+ Run`, `+ Ride`, or `+ Swim` any time to log distance (km) + duration. Multiple per day, editable and deletable.
+- **Sessions** are auto-generated each day from a weekly schedule (CJCA / Italian / Chinese). Check one off and log the actual minutes. In **Settings → Show on homepage** each can be set to **Plan** (its scheduled days), **Every day**, or **Off**. (Chinese is Off by default.)
+- **Activities** are ad-hoc — no fixed days. Tap `+ Run`, `+ Ride`, `+ Swim` (distance km + duration) or `+ Strength` (duration + an optional focus note, e.g. "Back & Biceps") whenever you do them. Multiple per day, editable and deletable. Each has its own weekly goal + streak entry (e.g. Strength 4×/week, Cardio 3×/week).
 - **Prayers**: five one-tap toggles with a recorded timestamp.
 - **Custom tasks**: add your own recurring tasks (name, optional minutes, which weekdays) via **+ Add task** — they show alongside the built-ins. Minutes = 0 makes it a plain checkbox.
 - **Wishlist**: a separate tab for things you want to buy (name, price in MAD, note) with a running total. Tap **Select** to multi-pick items and **Remove** them.
@@ -17,7 +17,7 @@ One global daily streak, shown at the top of Today. Rules live in **Settings** (
 - Per task, choose **Daily** (needed each day it’s planned), **Weekly ×N** (a goal that shows progress but *never breaks the fire* — e.g. gym 4×/week), or **Off**.
 - A day keeps the fire if every **Daily** task planned that day is done. Weekly tasks appear under **Weekly goals** on Today.
 - **Freezes** ❄️: you earn 1 every 7-day streak (4 weeks → 4 freezes). If a missed day breaks the streak, a **Restore streak** button spends freezes to bridge the gap and bring the fire back.
-- Defaults: CJCA / Italian / Prayer = Daily, Gym = 4×/week, Cardio = 3×/week, Chinese = Off. Change any of them in Settings.
+- Defaults: CJCA / Italian / Prayer = Daily, Strength = 4×/week, Cardio = 3×/week, Chinese = Off. Change any of them in Settings.
 
 ## Stack
 
